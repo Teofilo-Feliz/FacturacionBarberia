@@ -1,4 +1,7 @@
+using FacturacionBarberia.Application;
 using FacturacionBarberia.Infraestructure.Data;
+using FacturacionBarberia.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +9,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication(
+    CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(options =>
+{
+    options.LoginPath = "/Login";
+
+    options.AccessDeniedPath = "/Login/AccesoDenegado";
+
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+
+    options.SlidingExpiration = true;
+});
+
+//Injeccion dependecy
+builder.Services.AddApplication();
+
+builder.Services.AddInfrastructure();
+
 
 var app = builder.Build();
 

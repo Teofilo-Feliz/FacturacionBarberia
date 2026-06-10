@@ -9,12 +9,12 @@ namespace FacturacionBarberia.Infraestructure.Data
        : base(options)
         { 
         }
-        public override Task<int> SaveChangesAsync(
+        public override async Task<int> SaveChangesAsync(
          CancellationToken cancellationToken = default)
         {
             AplicarAuditoria();
 
-            return base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         private void AplicarAuditoria()
@@ -29,6 +29,7 @@ namespace FacturacionBarberia.Infraestructure.Data
                     case EntityState.Added:
 
                         entry.Entity.FechaCreacion = DateTime.UtcNow;
+                       
 
                         break;
 
@@ -37,6 +38,8 @@ namespace FacturacionBarberia.Infraestructure.Data
                         entry.Entity.FechaModificacion = DateTime.UtcNow;
 
                         break;
+
+                    
                 }
             }
         }

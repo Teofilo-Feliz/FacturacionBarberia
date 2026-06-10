@@ -23,29 +23,32 @@ namespace FacturacionBarberia.Aplication.Services
         public async Task<Response<UsuarioResponse>> AgregarUsuario(UsuarioRequest request)
         {
             var response = new Response<UsuarioResponse>();
-            var errors = new List<string>();
+           
 
             try
             {
                
 
                 if (string.IsNullOrWhiteSpace(request.Nombre))
-                    errors.Add("El nombre es obligatorio.");
+                   response.Errors.Add("El nombre es obligatorio.");
 
                 if (string.IsNullOrWhiteSpace(request.UserName))
-                    errors.Add("El nombre de usuario es obligatorio.");
+                    response.Errors.Add("El nombre de usuario es obligatorio.");
 
                 if (string.IsNullOrWhiteSpace(request.Password))
-                    errors.Add("La contraseña es obligatoria.");
+                    response.Errors.Add("La contraseña es obligatoria.");
 
                 if (request.Password?.Length < 6)
-                    errors.Add("La contraseña debe contener al menos 6 caracteres.");
+                    response.Errors.Add("La contraseña debe contener al menos 6 caracteres.");
+
+                if (request.UserName.Length > 50)
+                    response.Errors.Add("El usuario no puede tener mas de 50 caracteres");
 
                 if (!Enum.IsDefined(typeof(RolEnum), request.Rol))
-                    errors.Add("El rol seleccionado no es válido.");
+                    response.Errors.Add("El rol seleccionado no es válido.");
 
                 if (!Enum.IsDefined(typeof(EstadoEnum), request.Estado))
-                    errors.Add("El estado seleccionado no es válido.");
+                    response.Errors.Add("El estado seleccionado no es válido.");
 
 
 
@@ -53,16 +56,13 @@ namespace FacturacionBarberia.Aplication.Services
                     x => x.UserName == request.UserName);
 
                 if (existeUsuario != null)
-                    errors.Add($"El usuario '{request.UserName}' ya existe en el sistema.");
+                    response.Errors.Add($"El usuario '{request.UserName}' ya existe en el sistema.");
 
                
 
-                if (errors.Any())
+                if (response.ThereIsError)
                 {
                     response.Successful = false;
-                    response.Message = "Se encontraron errores de validación.";
-                    response.Errors = errors;
-
                     return response;
                 }
 
@@ -103,6 +103,107 @@ namespace FacturacionBarberia.Aplication.Services
         {
             ex.Message
         };
+
+                return response;
+            }
+        }
+
+        public async Task<Response<LoginResponse>> Login(LoginRequest request)
+        {
+            var response = new Response<LoginResponse>();
+          
+
+            try
+            {
+
+                if (request == null)
+                {
+                    response.Successful = false;
+                    response.Errors.Add("Solicitud inválida.");
+
+                    return response;
+                }
+
+                if (string.IsNullOrWhiteSpace(request.UserName))
+                {
+                    response.Errors.Add("Debe ingresar el usuario.");
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Password))
+                {
+                    response.Errors.Add("Debe ingresar la contraseña.");
+                }
+  
+
+                if (response.ThereIsError)
+                {
+                    response.Successful = false;
+
+                    return response;
+                }
+
+
+                var usuario = await _repository.GetAsync(
+                    x => x.UserName == request.UserName);
+
+                if (usuario == null)
+                {
+                    response.Successful = false;
+                    response.Message = "Usuario o contraseña incorrectos.";
+
+                    return response;
+                }
+
+                if (usuario.EstaEliminado)
+                {
+                    response.Successful = false;
+                    response.Message =
+                        "Usuario o contraseña incorrectos.";
+
+                    return response;
+                }
+
+                if (usuario.Estado != EstadoEnum.Activo)
+                {
+                    response.Successful = false;
+                    response.Message = "El usuario se encuentra inactivo.";
+
+                    return response;
+                }
+
+                bool passwordValida = BCrypt.Net.BCrypt.Verify(
+                    request.Password,
+                    usuario.PasswordHash);
+
+                if (!passwordValida)
+                {
+                    response.Successful = false;
+                    response.Message = "Usuario o contraseña incorrectos.";
+
+                    return response;
+                }
+
+               
+
+                response.Successful = true;
+                response.Message = "Inicio de sesión exitoso.";
+
+                response.Data = new LoginResponse
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    Nombre = usuario.Nombre,
+                    UserName = usuario.UserName,
+                    Rol = usuario.Rol,
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al iniciar sesión.";
+
+                response.Errors.Add(ex.Message);
 
                 return response;
             }
