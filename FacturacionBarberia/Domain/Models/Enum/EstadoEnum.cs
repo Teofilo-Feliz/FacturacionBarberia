@@ -4,7 +4,9 @@ namespace FacturacionBarberia.Domain.Models.Enum
 {
     public enum EstadoEnum
     {
-        Inactivo = 1,
-        Activo = 2,
+        Seleccione = 0,
+        Activo = 1,
+        Inactivo = 2,
     }
+        
 }

@@ -8,11 +8,11 @@ using System.Security.Claims;
 
 namespace FacturacionBarberia.Controllers
 {
-    public class LoginControllers : Controller
+    public class LoginController : Controller
     {
         private readonly IUsuario _usuarioServices;
 
-        public LoginControllers(IUsuario usuarioServices)
+        public LoginController(IUsuario usuarioServices)
         {
             _usuarioServices = usuarioServices;
         }
@@ -78,8 +78,8 @@ namespace FacturacionBarberia.Controllers
                 principal);
 
             return RedirectToAction(
-                "Index",
-                "Home");
+                "Crear",
+                "Usuario");
         }
 
         [HttpPost]
@@ -89,8 +89,8 @@ namespace FacturacionBarberia.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction(
-                "Index",
-                "Login");
+                "home",
+                "Usuario");
         }
 
         [HttpGet]

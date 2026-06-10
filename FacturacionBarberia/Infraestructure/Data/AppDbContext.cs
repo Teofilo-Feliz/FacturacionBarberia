@@ -1,13 +1,16 @@
 ﻿using FacturacionBarberia.Domain.Models.Entities;
+using FacturacionBarberia.Infraestructure.Audit;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacturacionBarberia.Infraestructure.Data
 {
     public class AppDbContext: DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        private readonly ICurrentUserService _currentUserService;
+        public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService)
        : base(options)
         { 
+            _currentUserService = currentUserService;
         }
         public override async Task<int> SaveChangesAsync(
          CancellationToken cancellationToken = default)
@@ -19,8 +22,10 @@ namespace FacturacionBarberia.Infraestructure.Data
 
         private void AplicarAuditoria()
         {
-            var entradas = ChangeTracker
-                .Entries<AuditoriaEntities>();
+            var usuarioId = _currentUserService.UsuarioId;
+
+            var entradas =
+                ChangeTracker.Entries<AuditoriaEntities>();
 
             foreach (var entry in entradas)
             {
@@ -28,18 +33,37 @@ namespace FacturacionBarberia.Infraestructure.Data
                 {
                     case EntityState.Added:
 
-                        entry.Entity.FechaCreacion = DateTime.UtcNow;
-                       
+                        entry.Entity.FechaCreacion =
+                            DateTime.UtcNow;
+
+                        entry.Entity.UsuarioCreacion =
+                            usuarioId;
 
                         break;
 
                     case EntityState.Modified:
 
-                        entry.Entity.FechaModificacion = DateTime.UtcNow;
+                        entry.Entity.FechaModificacion =
+                            DateTime.UtcNow;
+
+                        entry.Entity.UsuarioModificacion =
+                            usuarioId;
 
                         break;
 
-                    
+                    case EntityState.Deleted:
+
+                        entry.State = EntityState.Modified;
+
+                        entry.Entity.EstaEliminado = true;
+
+                        entry.Entity.FechaEliminacion =
+                            DateTime.UtcNow;
+
+                        entry.Entity.UsuarioEliminacion =
+                            usuarioId;
+
+                        break;
                 }
             }
         }
@@ -51,14 +75,23 @@ namespace FacturacionBarberia.Infraestructure.Data
         public DbSet<Factura> Facturas { get; set; }
         public DbSet<DetalleFactura> DetallesFactura { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(
+        ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(
-                typeof(AppDbContext).Assembly);
-        }
+            modelBuilder.Entity<Usuario>()
+                .HasQueryFilter(x => !x.EstaEliminado);
 
+            modelBuilder.Entity<Cliente>()
+                .HasQueryFilter(x => !x.EstaEliminado);
+
+            modelBuilder.Entity<Servicio>()
+                .HasQueryFilter(x => !x.EstaEliminado);
+
+            modelBuilder.Entity<Factura>()
+                .HasQueryFilter(x => !x.EstaEliminado);
+        }
 
 
 
