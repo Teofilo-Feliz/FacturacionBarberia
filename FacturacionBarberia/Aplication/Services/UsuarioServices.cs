@@ -3,8 +3,10 @@ using FacturacionBarberia.Aplication.Helpers;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Domain.Models.Entities;
 using FacturacionBarberia.Domain.Models.Enum;
+using FacturacionBarberia.Infraestructure.Data;
 using FacturacionBarberia.Infraestructure.PatronRepository.GenericRepository;
 using FacturacionBarberia.Infraestructure.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace FacturacionBarberia.Aplication.Services
@@ -13,12 +15,15 @@ namespace FacturacionBarberia.Aplication.Services
     {
        private readonly IRepository<Usuario> _repository;
        private readonly IUnitOfWork _unitOfWork;
+ 
+     
 
       public UsuarioServices(IRepository<Usuario> repository, IUnitOfWork unitOfWork)
-      {
+        {
             _repository = repository;
             _unitOfWork = unitOfWork;
-      }
+           
+        }
 
         public async Task<Response<UsuarioResponse>> AgregarUsuario(UsuarioRequest request)
         {
@@ -50,7 +55,7 @@ namespace FacturacionBarberia.Aplication.Services
                 if (!Enum.IsDefined(typeof(EstadoEnum), request.Estado))
                     response.Errors.Add("El estado seleccionado no es válido.");
 
-
+       
 
                 var existeUsuario = await _repository.GetAsync(
                     x => x.UserName == request.UserName);
@@ -141,7 +146,6 @@ namespace FacturacionBarberia.Aplication.Services
 
                     return response;
                 }
-
 
                 var usuario = await _repository.GetAsync(
                     x => x.UserName == request.UserName);

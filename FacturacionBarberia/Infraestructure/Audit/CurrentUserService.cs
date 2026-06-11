@@ -2,7 +2,7 @@
 
 namespace FacturacionBarberia.Infraestructure.Audit
 {
-    public class CurrentUserService: ICurrentUserService
+    public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 

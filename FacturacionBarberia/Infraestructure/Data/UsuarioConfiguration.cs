@@ -1,4 +1,5 @@
 ﻿using FacturacionBarberia.Domain.Models.Entities;
+using FacturacionBarberia.Domain.Models.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,12 +29,18 @@ namespace FacturacionBarberia.Infraestructure.Data
                 .IsRequired();
 
             builder.Property(x => x.Rol)
-                .HasConversion<string>()
+                .HasConversion(
+                v => v.ToString(),                    
+                v => (RolEnum)Enum.Parse(typeof(RolEnum), v)
+                )
                 .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(x => x.Estado)
-                .HasConversion<string>()
+                .HasConversion(
+                v => v.ToString(),                    
+                v => (EstadoEnum)Enum.Parse(typeof(EstadoEnum), v)
+                )
                 .HasMaxLength(15)
                 .IsRequired();
 

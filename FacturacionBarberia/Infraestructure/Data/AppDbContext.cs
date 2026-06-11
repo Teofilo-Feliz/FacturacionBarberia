@@ -80,6 +80,10 @@ namespace FacturacionBarberia.Infraestructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfigurationsFromAssembly(
+               typeof(AppDbContext).Assembly);
+
+
             modelBuilder.Entity<Usuario>()
                 .HasQueryFilter(x => !x.EstaEliminado);
 
