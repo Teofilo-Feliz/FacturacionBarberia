@@ -15,21 +15,70 @@ namespace FacturacionBarberia.Infraestructure.PatronRepository.GenericRepository
             _db = context.Set<T>();
         }
 
+        public async Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>()
+                .ToListAsync();
+        }
+
+        public async Task<List<T>> GetAllAsync(
+            Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>()
+                .Where(predicate)
+                .ToListAsync();
+        }
+
         public async Task<T?> GetByIdAsync(int id)
-           => await _db.FindAsync(id);
+        {
+            return await _context.Set<T>()
+                .FindAsync(id);
+        }
 
         public async Task<T?> GetAsync(
-        Expression<Func<T, bool>> predicate)
-            => await _db.FirstOrDefaultAsync(predicate);
+            Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>()
+                .FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<bool> AnyAsync(
+            Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>()
+                .AnyAsync(predicate);
+        }
+
+        public async Task<int> CountAsync(
+            Expression<Func<T, bool>>? predicate = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.CountAsync();
+        }
 
         public async Task AddAsync(T entity)
-            => await _db.AddAsync(entity);
+        {
+            await _context.Set<T>()
+                .AddAsync(entity);
+        }
 
         public void Update(T entity)
-            => _db.Update(entity);
+        {
+            _context.Set<T>()
+                .Update(entity);
+        }
 
         public void Delete(T entity)
-            => _db.Remove(entity);
+        {
+            _context.Set<T>()
+                .Remove(entity);
+        }
 
     }
 }

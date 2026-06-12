@@ -3,11 +3,13 @@ using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace FacturacionBarberia.Controllers
 {
+
     public class LoginController : Controller
     {
         private readonly IUsuario _usuarioServices;
@@ -30,11 +32,14 @@ namespace FacturacionBarberia.Controllers
             {
                 return View(request);
             }
+            
 
             var result = await _usuarioServices.Login(request);
 
             if (!result.Successful)
             {
+
+
                 if (result.Errors.Any())
                 {
                     foreach (var error in result.Errors)
@@ -78,23 +83,22 @@ namespace FacturacionBarberia.Controllers
                 principal);
 
             return RedirectToAction(
-                "Crear",
-                "Usuario");
+                "Index",
+                "Home");
         }
 
+       
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction(
-                "home",
-                "Usuario");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult AccesoDenegado()
+        public IActionResult AccessDenied()
         {
             return View();
         }

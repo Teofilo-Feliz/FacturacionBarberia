@@ -1,6 +1,7 @@
 ﻿using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.Services;
+using FacturacionBarberia.Aplication.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,11 @@ namespace FacturacionBarberia.Controllers
         }
 
         [HttpGet]
-        public IActionResult Crear ()
+        public IActionResult Crear()
         {
             return View();
         }
-        [Authorize(Roles = "Administrador")]
+
         [HttpPost]
         public async Task<IActionResult> Crear(
         UsuarioRequest request)
@@ -49,8 +50,23 @@ namespace FacturacionBarberia.Controllers
 
             return RedirectToAction(nameof(Crear));
         }
+
+        public async Task<IActionResult> ObtenerUsuarios(
+         UsuarioConsultaViewModel model)
+        {
+            var result = await _usuarioServices
+                .ObtenerUsuarios(model.Filtros);
+
+            model.Usuarios = result.DataList?.ToList()
+                ?? new List<ObtenerUsuarioResponse>();
+
+            if (!result.Successful)
+            {
+                TempData["Error"] = result.Message;
+            }
+
+            return View(model);
+        }
+
     }
-
-
-
 }

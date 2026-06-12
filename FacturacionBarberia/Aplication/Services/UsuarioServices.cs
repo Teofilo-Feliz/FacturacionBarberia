@@ -213,7 +213,71 @@ namespace FacturacionBarberia.Aplication.Services
             }
         }
 
+        public async Task<Response<ObtenerUsuarioResponse>> ObtenerUsuarios(ObtenerUsuarioRequest request)
+        {
+            var response = new Response<ObtenerUsuarioResponse>();
 
+            try
+            {
+                var usuarios = await _repository
+                    .GetAllAsync(x => !x.EstaEliminado);
+
+                if (request.UsuarioId.HasValue)
+                {
+                    usuarios = usuarios
+                        .Where(x => x.UsuarioId == request.UsuarioId)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.UserName))
+                {
+                    usuarios = usuarios
+                        .Where(x => x.UserName.Contains(request.UserName))
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Nombre))
+                {
+                    usuarios = usuarios
+                        .Where(x => x.Nombre.Contains(request.Nombre))
+                        .ToList();
+                }
+
+                if (request.Estado.HasValue)
+                {
+                    usuarios = usuarios
+                        .Where(x => x.Estado == request.Estado)
+                        .ToList();
+                }
+
+                if (request.Rol.HasValue)
+                {
+                    usuarios = usuarios
+                        .Where(x => x.Rol == request.Rol.Value)
+                        .ToList();
+                }
+
+
+                response.Successful = true;
+
+                response.DataList = usuarios.Select(x => new ObtenerUsuarioResponse
+                {
+                    UsuarioId = x.UsuarioId,
+                    Nombre = x.Nombre,
+                    UserName = x.UserName,
+                    Rol = x.Rol,
+                    Estado = x.Estado
+                }).ToList();
+
+                return response;
+            }
+            catch (Exception)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al obtener los usuarios.";
+                return response;
+            }
+        }
 
 
     }

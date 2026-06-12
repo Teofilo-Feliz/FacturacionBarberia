@@ -1,67 +1,75 @@
-﻿@model FacturacionBarberia.Aplication.DTO.LoginRequest
-
+﻿@model LoginRequest
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_LayaoutLogin.cshtml";
 }
 
-<div class="row justify-content-center">
 
-    <div class="col-md-4">
+@section Styles
+{
+    <link rel="stylesheet"
+          href="~/css/login.css"
+          />
+}
 
-        <div class="card shadow">
+<div class="login-page">
 
-            <div class="card-header text-center">
+    <div class="login-card">
 
-                <h3>Iniciar Sesión</h3>
+        <h1>
+            💈 Barbería Manager
+        </h1>
+
+        <p>
+            Iniciar Sesión
+        </p>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-errors">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        }
+        
+
+        <form asp-action="Index"
+              method="post">
+
+            <div class="form-group">
+
+                <label>
+                    Usuario
+                </label>
+
+                <input asp-for="UserName"
+                       class="form-control" />
 
             </div>
 
-            <div class="card-body">
+            <div class="form-group">
 
-                <div asp-validation-summary="All"
-                     class="alert alert-danger">
-                </div>
+                <label>
+                    Contraseña
+                </label>
 
-                <form asp-action="Index"
-                      asp-controller="Login"
-                      method="post">
-
-                    <div class="mb-3">
-
-                        <label asp-for="UserName"
-                               class="form-label">
-                        </label>
-
-                        <input asp-for="UserName"
-                               class="form-control" />
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label asp-for="Password"
-                               class="form-label">
-                        </label>
-
-                        <input asp-for="Password"
-                               type="password"
-                               class="form-control" />
-
-                    </div>
-
-                    <button type="submit"
-                            class="btn btn-primary w-100">
-
-                        Iniciar Sesión
-
-                    </button>
-
-                </form>
+                <input asp-for="Password"
+                       type="password"
+                       class="form-control" />
 
             </div>
 
-        </div>
+            <button type="submit"
+                    class="btn-primary">
+
+                Iniciar Sesión
+
+            </button>
+
+        </form>
+
+      
 
     </div>
+
+    
 
 </div>

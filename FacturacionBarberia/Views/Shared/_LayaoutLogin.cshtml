@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login - Barbería Manager</title>
+    @RenderSection("Styles", required: false)
+    @section Styles
+    {
+        <link rel="stylesheet"
+              href="~/css/login.css" />
+    }
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/dashboard.css" />
+
+    <link rel="stylesheet"
+          href="~/css/usuario.css" />
+
+</head>
+
+<body>
+
+    <main class="main-container">
+        @RenderBody()
+    </main>
+
+</body>
+</html>

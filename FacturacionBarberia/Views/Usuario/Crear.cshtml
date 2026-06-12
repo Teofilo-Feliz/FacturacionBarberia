@@ -1,86 +1,112 @@
-﻿@model FacturacionBarberia.Aplication.DTO.UsuarioRequest
-@using FacturacionBarberia.Domain.Models.Enum
+﻿@model UsuarioRequest
 
-@{
-    ViewData["Title"] = "Crear Usuario";
+@section Styles
+{
+    <link rel="stylesheet"
+          href="~/css/usuario.css" />
 }
 
-<div class="row justify-content-center">
+<div class="card">
 
-    <div class="col-md-6">
+    <div class="card-header">
 
-        <div class="card card-barberia">
+        <h2>Registrar Usuario</h2>
 
-            <div class="card-header text-center">
+        <p>
+            Gestión de usuarios del sistema
+        </p>
 
-                <h3 class="titulo-barberia">
-                    Crear Usuario
-                </h3>
+    </div>
 
-            </div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="success-message">
 
-            <div class="card-body">
+            @TempData["Success"]
 
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success">
-                        @TempData["Success"]
-                    </div>
-                }
+        </div>
+    }
 
-                <div asp-validation-summary="All"
-                     class="alert alert-danger">
-                </div>
+    <div asp-validation-summary="All"
+         class="validation-errors">
+    </div>
 
-                <form asp-action="Crear"
-                      method="post">
+    <form asp-action="Crear"
+          method="post">
 
-                    <div class="mb-3">
-                        <label asp-for="Nombre"></label>
-                        <input asp-for="Nombre"
-                               class="form-control" />
-                    </div>
+        <div class="form-group">
 
-                    <div class="mb-3">
-                        <label asp-for="UserName"></label>
-                        <input asp-for="UserName"
-                               class="form-control" />
-                    </div>
+            <label>Nombre</label>
 
-                    <div class="mb-3">
-                        <label asp-for="Password"></label>
-                        <input asp-for="Password"
-                               type="password"
-                               class="form-control" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Rol"></label>
-                        <select asp-for="Rol"
-                                class="form-select"
-                                asp-items="Html.GetEnumSelectList<RolEnum>()">
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Estado"></label>
-                        <select asp-for="Estado"
-                                class="form-select"
-                                asp-items="Html.GetEnumSelectList<EstadoEnum>()">
-                        </select>
-                    </div>
-
-                    <button type="submit"
-                            class="btn btn-primary btn-barberia">
-                        Guardar Usuario
-                    </button>
-
-                </form>
-
-            </div>
+            <input asp-for="Nombre"
+                   class="form-control" />
 
         </div>
 
-    </div>
+        <div class="form-group">
+
+            <label>Usuario</label>
+
+            <input asp-for="UserName"
+                   class="form-control" />
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Contraseña</label>
+
+            <input asp-for="Password"
+                   type="password"
+                   class="form-control" />
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Rol</label>
+
+            <select asp-for="Rol"
+                    class="form-control">
+
+                <option value="1">
+                    Administrador
+                </option>
+
+                <option value="2">
+                    Cajero
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Estado</label>
+
+            <select asp-for="Estado"
+                    class="form-control">
+
+                <option value="1">
+                    Activo
+                </option>
+
+                <option value="2">
+                    Inactivo
+                </option>
+
+            </select>
+
+        </div>
+
+        <button type="submit"
+                class="btn-primary">
+
+            Guardar Usuario
+
+        </button>
+
+    </form>
 
 </div>

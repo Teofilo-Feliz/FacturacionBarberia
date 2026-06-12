@@ -1,0 +1,160 @@
+﻿@using FacturacionBarberia.Domain.Models.Enum
+@using FacturacionBarberia.Aplication.ViewModel
+
+@model UsuarioConsultaViewModel
+
+@section Styles
+{
+    <link rel="stylesheet"
+          href="~/css/usuario.css" />
+}
+
+
+
+    <form method="get"
+          asp-action="ObtenerUsuarios">
+
+        <div class="filters-card">
+
+            <h3>Filtros de búsqueda</h3>
+
+            <div class="filters-grid">
+
+                <div class="form-group">
+
+                    <label>ID</label>
+
+                    <input asp-for="Filtros.UsuarioId"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Usuario</label>
+
+                    <input asp-for="Filtros.UserName"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Nombre</label>
+
+                    <input asp-for="Filtros.Nombre"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Estado</label>
+
+                    <select asp-for="Filtros.Estado"
+                            class="form-control">
+
+                        <option value="">Todos</option>
+
+                        @foreach (var estado in Enum.GetValues<EstadoEnum>())
+                        {
+                            <option value="@estado">
+                                @estado
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Rol</label>
+
+                    <select asp-for="Filtros.Rol"
+                            class="form-control">
+
+                        <option value="">Todos</option>
+
+                        @foreach (var rol in Enum.GetValues<RolEnum>())
+                        {
+                            <option value="@rol">
+                                @rol
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    Buscar
+
+                </button>
+
+                <a asp-action="ObtenerUsuarios"
+                   class="btn-secondary">
+
+                    Limpiar
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+    @if (!Model.Usuarios.Any())
+    {
+        <div class="validation-errors">
+            No se encontraron usuarios.
+        </div>
+    }
+    else
+    {
+        <table class="table">
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var usuario in Model.Usuarios)
+                {
+                    <tr>
+
+                        <td>@usuario.UsuarioId</td>
+
+                        <td>@usuario.Nombre</td>
+
+                        <td>@usuario.UserName</td>
+
+                        <td>@usuario.Rol</td>
+
+                        <td>@usuario.Estado</td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+    }
+
+</div>
