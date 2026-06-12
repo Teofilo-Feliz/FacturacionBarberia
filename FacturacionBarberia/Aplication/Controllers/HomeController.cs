@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FacturacionBarberia.Controllers
+namespace FacturacionBarberia.Aplication.Controllers
 {
     [Authorize]
     public class HomeController : Controller

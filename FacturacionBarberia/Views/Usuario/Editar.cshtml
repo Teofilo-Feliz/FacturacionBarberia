@@ -1,0 +1,94 @@
+﻿@model EditarUsuarioRequest
+
+@using FacturacionBarberia.Domain.Models.Enum
+
+@section Styles
+{
+    <link rel="stylesheet"
+          href="~/css/editar.css" />
+}
+
+<div class="edit-container">
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>Editar Usuario</h2>
+
+        </div>
+
+        <form asp-action="Editar"
+              method="post">
+
+            <input asp-for="UsuarioId"
+                   type="hidden" />
+
+            <div class="form-group">
+
+                <label>Nombre</label>
+
+                <input asp-for="Nombre"
+                       class="form-control" />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Rol</label>
+
+                <select asp-for="Rol"
+                        class="form-control">
+
+                    @foreach (var rol in Enum.GetValues<RolEnum>())
+                    {
+                        <option value="@rol">
+                            @rol
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Estado</label>
+
+                <select asp-for="Estado"
+                        class="form-control">
+
+                    @foreach (var estado in Enum.GetValues<EstadoEnum>())
+                    {
+                        <option value="@estado">
+                            @estado
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="edit-actions">
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    Guardar
+
+                </button>
+
+                <a asp-action="ObtenerUsuarios"
+                   class="btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

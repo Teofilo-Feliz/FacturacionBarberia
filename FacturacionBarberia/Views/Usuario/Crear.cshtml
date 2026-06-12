@@ -26,10 +26,12 @@
 
         </div>
     }
-
-    <div asp-validation-summary="All"
-         class="validation-errors">
-    </div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="validation-errors">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        </div>
+    }
 
     <form asp-action="Crear"
           method="post">

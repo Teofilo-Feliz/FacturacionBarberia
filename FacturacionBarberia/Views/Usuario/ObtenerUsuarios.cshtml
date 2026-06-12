@@ -110,7 +110,7 @@
         </div>
 
     </form>
-
+  
     @if (!Model.Usuarios.Any())
     {
         <div class="validation-errors">
@@ -121,40 +121,51 @@
     {
         <table class="table">
 
-            <thead>
+        <thead>
 
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+
+        </thead>
+        <tbody>
+
+            @foreach (var usuario in Model.Usuarios)
+            {
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Usuario</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
+
+                    <td>@usuario.UsuarioId</td>
+
+                    <td>@usuario.Nombre</td>
+
+                    <td>@usuario.UserName</td>
+
+                    <td>@usuario.Rol</td>
+
+                    <td>@usuario.Estado</td>
+
+                    <td>
+
+                        <a asp-action="Editar"
+                           asp-route-id="@usuario.UsuarioId"
+                           class="btn-edit">
+
+                            Editar
+
+                        </a>
+
+                    </td>
+
                 </tr>
+            }
 
-            </thead>
-
-            <tbody>
-
-                @foreach (var usuario in Model.Usuarios)
-                {
-                    <tr>
-
-                        <td>@usuario.UsuarioId</td>
-
-                        <td>@usuario.Nombre</td>
-
-                        <td>@usuario.UserName</td>
-
-                        <td>@usuario.Rol</td>
-
-                        <td>@usuario.Estado</td>
-
-                    </tr>
-                }
-
-            </tbody>
+        </tbody>
 
         </table>
     }
 
-</div>

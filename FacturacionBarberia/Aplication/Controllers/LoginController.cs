@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace FacturacionBarberia.Controllers
+namespace FacturacionBarberia.Aplication.Controllers
 {
 
     public class LoginController : Controller

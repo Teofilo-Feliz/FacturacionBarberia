@@ -32,7 +32,6 @@ namespace FacturacionBarberia.Aplication.Services
 
             try
             {
-               
 
                 if (string.IsNullOrWhiteSpace(request.Nombre))
                    response.Errors.Add("El nombre es obligatorio.");
@@ -55,7 +54,17 @@ namespace FacturacionBarberia.Aplication.Services
                 if (!Enum.IsDefined(typeof(EstadoEnum), request.Estado))
                     response.Errors.Add("El estado seleccionado no es válido.");
 
-       
+                if (request.Estado == EstadoEnum.Inactivo)
+                {
+                    response.Successful = false;
+
+                    response.Errors.Add(
+                        "No se puede registrar un usuario en estado inactivo.");
+
+                    return response;
+                }
+
+
 
                 var existeUsuario = await _repository.GetAsync(
                     x => x.UserName == request.UserName);
@@ -275,6 +284,85 @@ namespace FacturacionBarberia.Aplication.Services
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al obtener los usuarios.";
+                return response;
+            }
+        }
+
+        public async Task<Response<EditarUsuarioRequest>> ObtenerUsuarioEditar(int id)
+        {
+            var response = new Response<EditarUsuarioRequest>();
+
+            try
+            {
+                var usuario = await _repository.GetByIdAsync(id);
+
+                if (usuario == null)
+                {
+                    response.Successful = false;
+                    response.Errors.Add("El usuario no fue encontrado.");
+
+                    return response;
+                }
+
+                response.Successful = true;
+
+                response.Data = new EditarUsuarioRequest
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    Nombre = usuario.Nombre,
+                    Rol = usuario.Rol,
+                    Estado = usuario.Estado
+                };
+
+                return response;
+            }
+            catch (Exception)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al obtener el usuario.";
+
+                return response;
+            }
+        }
+
+        public async Task<Response> EditarUsuario(
+             EditarUsuarioRequest request)
+        {
+            var response = new Response();
+
+            try
+            {
+                var usuario = await _repository
+                    .GetByIdAsync(request.UsuarioId);
+
+                if (usuario == null)
+                {
+                    response.Successful = false;
+
+                    response.Errors.Add(
+                        "El usuario no fue encontrado.");
+
+                    return response;
+                }
+
+                usuario.Nombre = request.Nombre;
+                usuario.Rol = request.Rol;
+                usuario.Estado = request.Estado;
+
+                _repository.Update(usuario);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                response.Successful = true;
+                response.Message = "Usuario actualizado correctamente.";
+
+                return response;
+            }
+            catch (Exception)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al actualizar el usuario.";
+
                 return response;
             }
         }
