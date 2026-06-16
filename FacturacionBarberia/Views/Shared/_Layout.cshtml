@@ -2,33 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
 
     <title>Barbería Manager</title>
 
-    @RenderSection("Styles", required: false)
-
-    @section Styles
-    {
-        <link rel="stylesheet"
-              href="~/css/login.css" />
-    }
-    
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
-    <link rel="stylesheet"
-          href="~/css/dashboard.css" />
-
-    <link rel="stylesheet"
-          href="~/css/usuario.css" />
-
-
-    
+    @RenderSection("Styles", required: false)
 
 </head>
+
 <body>
+
+    @{
+        var controller =
+        ViewContext.RouteData.Values["controller"]?.ToString();
+    }
 
     <header class="header">
 
@@ -36,33 +29,68 @@
             💈 Barbería Manager
         </div>
 
-        <!-- NAVBAR (NUEVO) -->
         <nav class="nav-menu">
 
-            <a asp-controller="Home" asp-action="Index">
+            <a asp-controller="Home"
+               asp-action="Index">
                 Inicio
             </a>
 
-            <a asp-controller="Usuario" asp-action="Index">
-                Usuarios
-            </a>
+            <div class="dropdown">
 
-            <a asp-controller="Cliente" asp-action="Index">
-                Clientes
-            </a>
+                <a href="#">
+                    Usuarios 
+                </a>
 
-            <a asp-controller="Servicio" asp-action="Index">
-                Servicios
-            </a>
+                <div class="dropdown-content">
+
+                    <a asp-controller="Usuario"
+                       asp-action="Crear">
+                        Crear Usuario
+                    </a>
+
+                    <a asp-controller="Usuario"
+                       asp-action="ObtenerUsuarios">
+                        Consultar Usuarios
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="dropdown">
+
+                <a href="#">
+                    Clientes 
+                </a>
+
+                <div class="dropdown-content">
+
+                    <a asp-controller="Cliente"
+                       asp-action="Crear">
+                        Crear Cliente
+                    </a>
+
+                    <a asp-controller="Cliente"
+                       asp-action="ObtenerClientes">
+                        Consultar Clientes
+                    </a>
+
+                </div>
+
+            </div>
 
         </nav>
 
-        @if (User.Identity!.IsAuthenticated)
+
+        @if (User.Identity?.IsAuthenticated == true)
         {
             <div class="header-right">
 
                 <span class="user-name">
+
                     @User.Identity.Name
+
                 </span>
 
                 <form asp-controller="Login"
@@ -85,9 +113,20 @@
 
     <main class="main-container">
 
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-success">
+
+                @TempData["Success"]
+
+            </div>
+        }
+
         @RenderBody()
 
     </main>
+
+    @RenderSection("Scripts", required: false)
 
 </body>
 </html>

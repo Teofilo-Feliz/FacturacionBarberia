@@ -1,12 +1,14 @@
 ﻿@using FacturacionBarberia.Domain.Models.Enum
 @using FacturacionBarberia.Aplication.ViewModel
 
-@model UsuarioConsultaViewModel
+@model ConsultaViewModel<ObtenerUsuarioRequest,ObtenerUsuarioResponse>
 
 @section Styles
 {
     <link rel="stylesheet"
           href="~/css/usuario.css" />
+
+    
 }
 
 
@@ -111,7 +113,7 @@
 
     </form>
   
-    @if (!Model.Usuarios.Any())
+    @if (!Model.Resultados.Any())
     {
         <div class="validation-errors">
             No se encontraron usuarios.
@@ -135,7 +137,7 @@
         </thead>
         <tbody>
 
-            @foreach (var usuario in Model.Usuarios)
+            @foreach (var usuario in Model.Resultados)
             {
                 <tr>
 

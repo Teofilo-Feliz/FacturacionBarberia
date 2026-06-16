@@ -23,6 +23,12 @@ namespace FacturacionBarberia.Aplication.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Index(
+          ConsultaViewModel<ObtenerUsuarioRequest, ObtenerUsuarioResponse> model)
+        {
+            return await ObtenerUsuarios(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Crear(
         UsuarioRequest request)
@@ -52,12 +58,12 @@ namespace FacturacionBarberia.Aplication.Controllers
         }
 
         public async Task<IActionResult> ObtenerUsuarios(
-         UsuarioConsultaViewModel model)
+     ConsultaViewModel<ObtenerUsuarioRequest, ObtenerUsuarioResponse> model)
         {
             var result = await _usuarioServices
                 .ObtenerUsuarios(model.Filtros);
 
-            model.Usuarios = result.DataList?.ToList()
+            model.Resultados = result.DataList?.ToList()
                 ?? new List<ObtenerUsuarioResponse>();
 
             if (!result.Successful)

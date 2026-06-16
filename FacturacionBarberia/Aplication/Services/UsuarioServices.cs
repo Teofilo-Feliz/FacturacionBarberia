@@ -280,7 +280,7 @@ namespace FacturacionBarberia.Aplication.Services
 
                 return response;
             }
-            catch (Exception)
+            catch (Exception )
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al obtener los usuarios.";

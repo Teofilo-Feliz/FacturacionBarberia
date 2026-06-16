@@ -1,0 +1,150 @@
+﻿@using FacturacionBarberia.Aplication.ViewModel
+@using FacturacionBarberia.Domain.Models.Enum
+
+@model ConsultaViewModel<ObtenerClienteRequest,ObtenerClienteResponse>
+
+@section Styles
+{
+    <link rel="stylesheet"
+          href="~/css/cliente.css" />
+
+    <link rel="stylesheet"
+          href="~/css/usuario.css" />
+
+}
+
+
+<form method="get"
+        asp-action="ObtenerClientes">
+    
+        <div class="filters-card">
+    
+            <h3>Filtros de búsqueda</h3>
+    
+            <div class="filters-grid">
+
+            <div class="form-group">
+                <label>ID</label>
+                <input asp-for="Filtros.ClienteId"
+                       class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Nombre</label>
+                <input asp-for="Filtros.Nombre"
+                       class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Telefono</label>
+                <input asp-for="Filtros.Telefono"
+                       class="form-control" />
+             </div>
+
+             <div class="form-group">
+                <label>Correo</label>
+                <input asp-for="Filtros.Correo"
+                       class="form-control" />
+             </div>
+
+            <div class="form-group">
+
+                <label>Estado</label>
+
+                <select asp-for="Filtros.Estado"
+                        class="form-control">
+
+                    <option value="">Todos</option>
+
+                    @foreach (var estado in Enum.GetValues<EstadoEnum>())
+                    {
+                        <option value="@estado">
+                            @estado
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+        </div>
+
+        <div class="actions">
+
+            <button type="submit"
+                    class="btn-primary">
+
+                Buscar
+
+            </button>
+
+            <a asp-action="ObtenerClientes"
+               class="btn-secondary">
+
+                Limpiar
+
+            </a>
+        </div>
+
+    </div>
+
+</form>
+
+ @if (!Model.Resultados.Any())
+    {
+        <div class="validation-errors">
+            No se encontraron usuarios.
+        </div>
+    }
+    else
+    {
+        <table class="table">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Telefono</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var cliente in Model.Resultados)
+            {
+                <tr>
+
+                    <td>@cliente.ClienteId</td>
+
+                    <td>@cliente.Nombre</td>
+
+                    <td>@cliente.Telefono</td>
+
+                    <td>@cliente.Correo</td>
+
+                    <td>@cliente.Estado</td>
+
+                    <td>
+
+                        <a asp-action="Editar"
+                           asp-route-id="@cliente.ClienteId"
+                           class="btn-edit">
+
+                            Editar
+
+                        </a>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
