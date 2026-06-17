@@ -1,0 +1,79 @@
+﻿@model EditarServicesRequest
+@using FacturacionBarberia.Domain.Models.Enum
+
+<div class="edit-container">
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>Editar Servicio</h2>
+
+        </div>
+
+         <form asp-action="Editar"
+              method="post">
+
+            <input asp-for="ServicioId"
+                   type="hidden" />
+
+            <div class="form-group">
+
+                <label>Nombre</label>
+
+                <input asp-for="Nombre"
+                       class="form-control" />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Precio</label>
+
+                <input asp-for="Precio"
+                       class="form-control" />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Estado</label>
+
+                <select asp-for="Estado"
+                        class="form-control">
+
+                    @foreach (var estado in Enum.GetValues<EstadoEnum>())
+                    {
+                        <option value="@estado">
+                            @estado
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="edit-actions">
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    Guardar
+
+                </button>
+
+                <a asp-action="ObtenerServicios"
+                   class="btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+

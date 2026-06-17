@@ -1,28 +1,20 @@
 ﻿@using FacturacionBarberia.Aplication.ViewModel
 @using FacturacionBarberia.Domain.Models.Enum
 
-@model ConsultaViewModel<ObtenerClienteRequest,ObtenerClienteResponse>
-
-@section Styles
-{
-    <link rel="stylesheet"
-          href="~/css/cliente.css" />
-
-}
-
+@model ConsultaViewModel<ObtenerServicioRequest,ObtenerServicioResponse>
 
 <form method="get"
-        asp-action="ObtenerClientes">
-    
-        <div class="filters-card">
-    
-            <h3>Filtros de búsqueda</h3>
-    
-            <div class="filters-grid">
+    asp-action="ObtenerServicios">
+
+    <div class="filters-card">
+
+        <h3>Filtros de búsqueda</h3>
+
+        <div class="filters-grid">
 
             <div class="form-group">
                 <label>ID</label>
-                <input asp-for="Filtros.ClienteId"
+                <input asp-for="Filtros.ServicioId"
                        class="form-control" />
             </div>
 
@@ -33,16 +25,10 @@
             </div>
 
             <div class="form-group">
-                <label>Telefono</label>
-                <input asp-for="Filtros.Telefono"
+                <label>Precio</label>
+                <input asp-for="Filtros.Precio"
                        class="form-control" />
-             </div>
-
-             <div class="form-group">
-                <label>Correo</label>
-                <input asp-for="Filtros.Correo"
-                       class="form-control" />
-             </div>
+            </div>
 
             <div class="form-group">
 
@@ -63,33 +49,34 @@
                 </select>
 
             </div>
+
+            <div class="actions">
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    Buscar
+
+                </button>
+
+                <a asp-action="ObtenerServicios"
+                   class="btn-secondary">
+                    Limpiar
+                </a>
+            </div>
+
         </div>
 
-        <div class="actions">
+   </div>
 
-            <button type="submit"
-                    class="btn-primary">
 
-                Buscar
-
-            </button>
-
-            <a asp-action="ObtenerClientes"
-               class="btn-secondary">
-
-                Limpiar
-
-            </a>
-        </div>
-
-    </div>
 
 </form>
 
- @if (!Model.Resultados.Any())
+@if (!Model.Resultados.Any())
     {
         <div class="validation-errors">
-            No se encontraron clientes.
+            No se encontraron servicios.
         </div>
     }
     else
@@ -101,8 +88,7 @@
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Telefono</th>
-                <th>Correo</th>
+                <th>Precio</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -111,24 +97,20 @@
 
         <tbody>
 
-            @foreach (var cliente in Model.Resultados)
+            @foreach (var servicio in Model.Resultados)
             {
                 <tr>
 
-                    <td>@cliente.ClienteId</td>
+                    <td>@servicio.ServicioId</td>
 
-                    <td>@cliente.Nombre</td>
-
-                    <td>@cliente.Telefono</td>
-
-                    <td>@cliente.Correo</td>
-
-                    <td>@cliente.Estado</td>
+                    <td>@servicio.Nombre</td>
+                    <td>@servicio.Precio</td>
+                    <td>@servicio.Estado</td>
 
                     <td>
 
                         <a asp-action="Editar"
-                           asp-route-id="@cliente.ClienteId"
+                           asp-route-id="@servicio.ServicioId"
                            class="btn-edit">
 
                             Editar
