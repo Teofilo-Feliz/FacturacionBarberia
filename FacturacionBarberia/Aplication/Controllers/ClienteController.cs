@@ -35,7 +35,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             {
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error);
+                    ModelState.AddModelError("", error);
                 }
 
                 return View(request);
@@ -63,5 +63,46 @@ namespace FacturacionBarberia.Aplication.Controllers
             return View("~/Views/Cliente/ObtenerClientes.cshtml", model);
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var result = await _cliente.ObtenerClienteEditar(id);
+            if (!result.Successful)
+            {
+                TempData["Error"] =
+                    result.Errors.FirstOrDefault()
+                    ?? result.Message;
+                return RedirectToAction(nameof(ObtenerClientes));
+            }
+
+            return View(result.Data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Editar(EditarClienteRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+               return View(request);
+            }
+
+            var result =
+                await _cliente.EditarCliente(request);
+
+            if (!result.Successful)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+                return View(request);
+            }
+
+            TempData["Success"] =
+                "Cliente Actualizado correctamente.";
+            return RedirectToAction(nameof(ObtenerClientes));
+        }
+
     }
 }

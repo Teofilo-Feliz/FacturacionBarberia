@@ -198,6 +198,81 @@ namespace FacturacionBarberia.Aplication.Services
 
         }
 
+        public async Task<Response<EditarClienteRequest>> ObtenerClienteEditar(int id)
+        {
+            var response = new Response<EditarClienteRequest>();
+
+            try
+            {
+                var clientes = await _repository.GetByIdAsync(id);
+
+                if (clientes == null)
+                {
+                     response.Successful = false;
+                    response.Message = "Cliente no encontrado.";
+                    return response;
+                }
+                
+                response.Successful = true;
+
+                response.Data = new EditarClienteRequest
+                {
+                    ClienteId = clientes.ClienteId,
+                    Nombre = clientes.Nombre,
+                    Telefono = clientes.Telefono,
+                    Correo = clientes.Correo,
+                    Estado = clientes.Estado
+                };
+                return response;
+
+
+            }
+            catch (Exception)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al obtener el cliente.";
+                return response;
+
+            }
+        }
+
+        public async Task<Response> EditarCliente(EditarClienteRequest request)
+        {
+            var response = new Response();
+            try
+            {
+                var clientes = await _repository
+                    .GetByIdAsync(request.ClienteId);
+
+                if (clientes == null)
+                {
+                    response.Successful = false;
+                    response.Message = "Cliente no encontrado.";
+                    return response;
+                }
+
+                clientes.Nombre = request.Nombre;
+                clientes.Telefono = request.Telefono;
+                clientes.Correo = request.Correo;
+                clientes.Estado = request.Estado;
+
+                _repository.Update(clientes);
+                await _unitOfWork.SaveChangesAsync();
+
+                response.Successful = true;
+                response.Message = "Cliente actualizado exitosamente.";
+                return response;
+            }
+            catch (Exception)
+            {
+                response.Successful = false;
+                response.Message = "Ocurrió un error al actualizar el cliente.";
+                return response;
+
+            }
+        }
+
+
 
     }
 }

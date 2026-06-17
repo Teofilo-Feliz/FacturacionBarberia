@@ -1,0 +1,55 @@
+﻿@model ServicioRequest
+
+<div class="servicio-container">
+
+    <div class="card"> 
+        <h2 class="title">
+            Registrar Servicio 
+        </h2>
+
+          <form asp-action="Crear" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="validation-errors">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Nombre
+                </label>
+
+                <input asp-for="Nombre"
+                       class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Precio
+                </label>
+
+                <input asp-for="Precio"
+                       class="form-control" />
+            </div>
+
+                <div class="button-group">
+
+                    <button type="submit"
+                            class="btn-primary">
+                        Guardar
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn-secondary">
+                        Cancelar
+                    </a>
+
+                </div>
+
+        </form>
+        
+        
+    </div>
+
+
+
+</div>

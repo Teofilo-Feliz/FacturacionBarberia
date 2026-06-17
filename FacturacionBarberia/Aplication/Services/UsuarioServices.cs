@@ -97,7 +97,7 @@ namespace FacturacionBarberia.Aplication.Services
 
                 response.Data = new UsuarioResponse
                 {
-                    Id = usuario.UsuarioId,
+                    UsuarioId = usuario.UsuarioId,
                     Nombre = usuario.Nombre,
                     UserName = usuario.UserName,
                     Rol = usuario.Rol,
