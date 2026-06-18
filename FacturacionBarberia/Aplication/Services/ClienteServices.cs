@@ -251,10 +251,65 @@ namespace FacturacionBarberia.Aplication.Services
                     return response;
                 }
 
-                clientes.Nombre = request.Nombre;
-                clientes.Telefono = request.Telefono;
-                clientes.Correo = request.Correo;
+                clientes.Nombre = request.Nombre?.Trim()!;
+                clientes.Telefono = request.Telefono?.Trim()!;
+                clientes.Correo = request.Correo?.Trim().ToLower()!;
                 clientes.Estado = request.Estado;
+
+                if (string.IsNullOrWhiteSpace(request.Nombre))
+                {
+                    response.Errors.Add(
+                        "El nombre del cliente es requerido.");
+                }
+
+                if (!ValidationHelpers.EsCorreoValido(
+                    request.Correo))
+                {
+                    response.Errors.Add(
+                        "El correo no es válido.");
+                }
+
+                if (!ValidationHelpers.EsTelefonoValido(
+                    request.Telefono))
+                {
+                    response.Errors.Add(
+                        "El número de teléfono no es válido.");
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Telefono))
+                {
+                    var existeTelefono = await _repository.AnyAsync(
+                        x => x.Telefono == request.Telefono);
+
+                    if (existeTelefono)
+                    {
+                        response.Errors.Add(
+                            "El número de teléfono ya está registrado.");
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Correo))
+                {
+                    var existeCorreo = await _repository.AnyAsync(
+                        x => x.Correo == request.Correo);
+
+                    if (existeCorreo)
+                    {
+                        response.Errors.Add(
+                            "El correo ya está registrado.");
+                    }
+                }
+
+                if (response.ThereIsError)
+                {
+                    response.Successful = false;
+
+                    return response;
+                }
+
+
+
+
 
                 _repository.Update(clientes);
                 await _unitOfWork.SaveChangesAsync();
@@ -263,10 +318,11 @@ namespace FacturacionBarberia.Aplication.Services
                 response.Message = "Cliente actualizado exitosamente.";
                 return response;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al actualizar el cliente.";
+                response.Errors.Add(ex.Message);
                 return response;
 
             }

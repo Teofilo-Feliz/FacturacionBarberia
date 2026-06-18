@@ -20,8 +20,27 @@
 
         </div>
 
+        @if (TempData["Success"] != null)
+        {
+            <div class="success-message">
+
+                @TempData["Success"]
+
+            </div>
+        }
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-errors">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        }
+
         <form asp-action="Editar"
               method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="validation-errors">
+            </div>
 
             <input asp-for="UsuarioId"
                    type="hidden" />
@@ -30,7 +49,7 @@
 
                 <label>Nombre</label>
 
-                <input asp-for="Nombre"
+                <input asp-for="Nombre" required
                        class="form-control" />
 
             </div>

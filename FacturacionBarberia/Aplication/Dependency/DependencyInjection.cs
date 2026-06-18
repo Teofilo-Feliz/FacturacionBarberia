@@ -11,6 +11,7 @@ namespace FacturacionBarberia.Application
             services.AddScoped<IUsuario, UsuarioServices>();
             services.AddScoped<ICliente, ClienteServices>();
             services.AddScoped<IServicio,ServicioServices>();
+            services.AddScoped<IFactura, FacturaServices>();
 
             return services;
         }

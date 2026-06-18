@@ -27,5 +27,16 @@ namespace FacturacionBarberia.Infraestructure.Audit
                 return int.Parse(claim.Value);
             }
         }
+
+        public string? UserName
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext?
+                    .User?
+                    .Identity?
+                    .Name;
+            }
+        }
     }
 }

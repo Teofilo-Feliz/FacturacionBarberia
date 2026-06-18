@@ -14,14 +14,17 @@
          <form asp-action="Editar"
               method="post">
 
+            <div asp-validation-summary="ModelOnly"
+                 class="validation-errors">
+            </div>
+
             <input asp-for="ServicioId"
                    type="hidden" />
 
             <div class="form-group">
 
                 <label>Nombre</label>
-
-                <input asp-for="Nombre"
+                <input asp-for="Nombre" required 
                        class="form-control" />
 
             </div>
@@ -30,7 +33,7 @@
 
                 <label>Precio</label>
 
-                <input asp-for="Precio"
+                <input asp-for="Precio" required
                        class="form-control" />
 
             </div>

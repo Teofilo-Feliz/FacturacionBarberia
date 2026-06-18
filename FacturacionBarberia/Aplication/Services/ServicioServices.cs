@@ -201,9 +201,37 @@ namespace FacturacionBarberia.Aplication.Services
                     return response;
                 }
 
-                servicios.Nombre = request.Nombre;
+                servicios.Nombre = request.Nombre.Trim();
                 servicios.Precio = request.Precio;
                 servicios.Estado = request.Estado;
+
+                if (string.IsNullOrWhiteSpace(request.Nombre))
+                    response.Errors.Add("El nombre del servicio es obligatorio");
+
+                if (request.Precio <= 0)
+                    response.Errors.Add("El precio del servicio es obligatorio");
+
+                if (request.Estado == EstadoEnum.Inactivo)
+                {
+                    response.Successful = false;
+
+                    response.Errors.Add(
+                        "No se puede registrar un servicio en estado inactivo.");
+
+                    return response;
+                }
+
+                var existeServicio = await _repository.GetAsync(
+                    x => x.Nombre == request.Nombre);
+                if (existeServicio != null)
+                    response.Errors.Add("El nombre del servicio ya esta registrado");
+
+                if (response.ThereIsError)
+                {
+                    response.Successful = false;
+                    return response;
+                }
+
 
                 _repository.Update(servicios);
                 await _unitOfWork.SaveChangesAsync();
@@ -214,10 +242,11 @@ namespace FacturacionBarberia.Aplication.Services
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al actualizar el servicio.";
+                response.Errors.Add(ex.Message);
                 return response;
 
             }

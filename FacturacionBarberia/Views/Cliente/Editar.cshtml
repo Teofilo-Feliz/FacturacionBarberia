@@ -21,6 +21,10 @@
          <form asp-action="Editar"
               method="post">
 
+            <div asp-validation-summary="ModelOnly"
+                 class="validation-errors">
+            </div>
+
             <input asp-for="ClienteId"
                    type="hidden" />
 
@@ -29,7 +33,7 @@
 
                 <label>Nombre</label>
 
-                <input asp-for="Nombre"
+                <input asp-for="Nombre" required
                        class="form-control" />
 
             </div>

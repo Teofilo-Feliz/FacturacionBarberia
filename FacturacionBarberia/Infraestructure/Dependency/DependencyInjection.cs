@@ -1,5 +1,6 @@
 ﻿using FacturacionBarberia.Domain.Models.Entities;
 using FacturacionBarberia.Infraestructure.Audit;
+using FacturacionBarberia.Infraestructure.PatronRepository.FacturaRepository;
 using FacturacionBarberia.Infraestructure.PatronRepository.GenericRepository;
 using FacturacionBarberia.Infraestructure.UnitOfWork;
 
@@ -18,6 +19,7 @@ namespace FacturacionBarberia.Infrastructure
             services.AddHttpContextAccessor();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IFacturaRepository, FacturaRepository>();
 
             return services;
         }

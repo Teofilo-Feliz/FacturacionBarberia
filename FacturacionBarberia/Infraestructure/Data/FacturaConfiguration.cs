@@ -24,6 +24,11 @@ namespace FacturacionBarberia.Infraestructure.Data
             builder.Property(x => x.Observaciones)
                 .HasMaxLength(500);
 
+            builder.Property(x => x.EstadoFactura)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
             builder.HasOne(x => x.Cliente)
                 .WithMany(x => x.Facturas)
                 .HasForeignKey(x => x.ClienteId)

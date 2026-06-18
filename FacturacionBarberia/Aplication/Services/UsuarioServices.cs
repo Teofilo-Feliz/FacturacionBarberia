@@ -113,11 +113,7 @@ namespace FacturacionBarberia.Aplication.Services
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al registrar el usuario.";
-                response.Errors = new List<string>
-        {
-            ex.Message
-        };
-
+                response.Errors = new List<string> { ex.Message };
                 return response;
             }
         }
@@ -345,9 +341,42 @@ namespace FacturacionBarberia.Aplication.Services
                     return response;
                 }
 
+
                 usuario.Nombre = request.Nombre;
                 usuario.Rol = request.Rol;
                 usuario.Estado = request.Estado;
+
+                if (request == null)
+                {
+                    response.Errors.Add("El campo es requerido");
+                    return response;
+                }
+                if (string.IsNullOrWhiteSpace(request.Nombre))
+                    response.Errors.Add("El nombre es obligatorio.");
+
+                if (!Enum.IsDefined(typeof(RolEnum), request.Rol))
+                    response.Errors.Add("El rol seleccionado no es válido.");
+
+                if (!Enum.IsDefined(typeof(EstadoEnum), request.Estado))
+                    response.Errors.Add("El estado seleccionado no es válido.");
+
+                if (request.Estado == EstadoEnum.Inactivo)
+                {
+                    response.Successful = false;
+
+                    response.Errors.Add(
+                        "No se puede registrar un usuario en estado inactivo.");
+
+                    return response;
+                }
+
+
+
+                if (response.ThereIsError)
+                {
+                    response.Successful = false;
+                    return response;
+                }
 
                 _repository.Update(usuario);
 
@@ -358,11 +387,11 @@ namespace FacturacionBarberia.Aplication.Services
 
                 return response;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.Successful = false;
                 response.Message = "Ocurrió un error al actualizar el usuario.";
-
+                response.Errors = new List<string> { ex.Message };
                 return response;
             }
         }

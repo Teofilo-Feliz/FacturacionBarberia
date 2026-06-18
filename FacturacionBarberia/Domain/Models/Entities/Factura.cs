@@ -21,7 +21,7 @@ namespace FacturacionBarberia.Domain.Models.Entities
         public Cliente Cliente { get; set; } = null!;
 
         public Usuario Usuario { get; set; } = null!;
-
+        public EstadoFacturaEnum EstadoFactura { get; set; }
         public ICollection<DetalleFactura> Detalles { get; set; }
             = new List<DetalleFactura>();
     }
