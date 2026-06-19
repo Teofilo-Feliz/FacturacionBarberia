@@ -2,39 +2,46 @@
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
     public class FacturaController : Controller
     {
         private readonly IFactura _factura;
+        private readonly ICliente _cliente;
+        private readonly IServicio _servicio;
 
-        public FacturaController(IFactura factura)
+        public FacturaController(IFactura factura, ICliente cliente, IServicio servicio )
         {
             _factura = factura;
+            _cliente = cliente;
+            _servicio = servicio;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Crear()
         {
-            return RedirectToAction(nameof(ObtenerFacturas));
-        }
+            var model = new CrearFacturaViewModel();
 
-        [HttpGet]
-        public IActionResult Crear()
-        {
-            return View();
+            await CargarCombos(model);
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear(FacturaRequest request)
+        public async Task<IActionResult> Crear(CrearFacturaViewModel model)
         {
-            var result = await _factura.AgregarFacturas(request);
+            var result = await _factura.AgregarFacturas(model.Factura);
 
             if (!result.Successful)
             {
                 TempData["Error"] = result.Message;
-                return View(request);
+
+                
+                await CargarCombos(model);
+
+                return View(model);
             }
 
             TempData["Success"] = result.Message;
@@ -87,6 +94,44 @@ namespace FacturacionBarberia.Aplication.Controllers
                 : "Error"] = result.Message;
 
             return RedirectToAction(nameof(ObtenerFacturas));
+        }
+
+        private async Task CargarCombos(
+        CrearFacturaViewModel model)
+        {
+            var clientes =
+                await _cliente.ObtenerCliente(
+                    new ObtenerClienteRequest());
+
+            var servicios =
+                await _servicio.ObtenerServicios(
+                    new ObtenerServicioRequest());
+
+            model.Clientes =
+                clientes.DataList?
+                .Select(x => new SelectListItem
+                {
+                    Value = x.ClienteId.ToString(),
+                    Text = x.Nombre
+                })
+                .ToList()
+                ?? new List<SelectListItem>();
+
+            model.Servicios =
+                servicios.DataList?
+                .Select(x => new SelectListItem
+                {
+                    Value = x.ServicioId.ToString(),
+                    Text = $"{x.Nombre} - RD$ {x.Precio:N2}"
+                })
+                .ToList()
+                ?? new List<SelectListItem>();
+
+            model.ServiciosData =
+            servicios.DataList?.ToList()
+            ?? new List<ObtenerServicioResponse>();
+
+
         }
 
     }

@@ -25,9 +25,9 @@ namespace FacturacionBarberia.Infraestructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Servicio)
-                .WithMany()
-                .HasForeignKey(x => x.ServicioId)
-                .OnDelete(DeleteBehavior.Restrict);
+             .WithMany(x => x.DetalleFacturas)
+             .HasForeignKey(x => x.ServicioId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             // Ignora el SubTotal calculado en C#
             builder.Ignore(x => x.SubTotal);

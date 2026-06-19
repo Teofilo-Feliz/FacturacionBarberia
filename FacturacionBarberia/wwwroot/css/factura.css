@@ -1,0 +1,240 @@
+﻿/* ==========================================================================
+   Contenedor Principal y Tarjeta (Layout Base)
+   ========================================================================== */
+.factura-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.factura-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 950px;
+}
+
+.factura-title {
+    margin-top: 0;
+    margin-bottom: 2rem;
+    color: #212529;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   Formularios y Elementos de Entrada
+   ========================================================================== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: #212529;
+}
+
+    .form-control:disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+
+/* ==========================================================================
+   Secciones y Cuadrículas (Grids)
+   ========================================================================== */
+/* Bloque del Cliente y Fecha */
+.factura-header-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* El cliente toma el doble de espacio */
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Bloque Operativo de Selección de Servicios */
+.factura-seccion-servicios {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: #fff;
+}
+
+.seccion-legend {
+    padding: 0 0.5rem;
+    font-weight: 700;
+    color: #0b5ed7;
+    font-size: 1rem;
+}
+
+/* Grid interna para alinear el select, cantidad y botón horizontalmente */
+.servicios-selector-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 1.5rem;
+    align-items: flex-end; /* Alinea el botón con la parte inferior de los inputs */
+}
+
+/* Asegura que el botón ocupe la altura correcta */
+.action-cell {
+    margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   Estructura de la Tabla de Detalles
+   ========================================================================== */
+.factura-detalle-wrapper {
+    margin: 2rem 0;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.factura-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+    .factura-tabla th {
+        background-color: #212529;
+        color: #ffffff;
+        padding: 0.85rem 1rem;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .factura-tabla td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #dee2e6;
+        color: #212529;
+    }
+
+    .factura-tabla tr:last-child td {
+        border-bottom: none;
+    }
+
+/* Alineaciones específicas */
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* ==========================================================================
+   Resumen e Importes Finales
+   ========================================================================== */
+.factura-resumen {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1.5rem 0 2.5rem 0;
+    padding-right: 0.5rem;
+}
+
+.total-highlight {
+    display: flex;
+    gap: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #198754; /* Verde corporativo */
+    border-bottom: 3px double #198754;
+    padding-bottom: 0.25rem;
+}
+
+/* ==========================================================================
+   Botones y Acciones
+   ========================================================================== */
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    border-top: 1px solid #e9ecef;
+    padding-top: 1.5rem;
+}
+
+/* Heredando estilos base de tus botones con correcciones de layout */
+.btn-primary, .btn-secondary {
+    padding: 0.65rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+    }
+
+    .btn-primary:disabled {
+        background-color: #a3cfbb;
+        color: #fff;
+        cursor: not-allowed;
+    }
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+    .btn-secondary:hover {
+        background-color: #5c636a;
+    }
+
+/* Botón Eliminar fila (X) */
+.btn-eliminar-item {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-eliminar-item:hover {
+        background: #bb2d3b;
+    }

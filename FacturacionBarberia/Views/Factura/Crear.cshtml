@@ -1,5 +1,336 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using System.Text.Json
+@using FacturacionBarberia.Domain.Models.Enum
+@using FacturacionBarberia.Aplication.ViewModel
+
+@model CrearFacturaViewModel
+
+<div class="filters-card">
+
+    <h3>Crear Factura</h3>
+
+    <form asp-action="Crear"
+          method="post"
+          id="facturaForm">
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-errors">
+        </div>
+
+        <div class="filters-grid">
+
+            <div class="form-group">
+
+                <label>Cliente</label>
+
+                <select asp-for="Factura.ClienteId" required
+                        asp-items="Model.Clientes"
+                        class="form-control">
+
+                    <option value="">
+                        Seleccione un cliente
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Forma de Pago</label>
+
+                <select asp-for="Factura.FormaPago" required
+                        class="form-control">
+
+                    <option value="">
+                        Seleccione una forma de pago
+                    </option>
+
+                    @foreach (var formaPago in Enum.GetValues<FormaPagoEnum>())
+                    {
+                        <option value="@formaPago">
+                            @formaPago
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <hr />
+
+        
+
+        <div class="filters-grid">
+
+            <div class="form-group">
+
+                <label>Servicio</label>
+
+                <select id="servicioSelect" required
+                        class="form-control">
+
+                    <option value="">
+                        Seleccione un servicio
+                    </option>
+
+                    @foreach (var servicio in Model.ServiciosData)
+                    {
+                        <option value="@servicio.ServicioId"
+                                data-precio="@servicio.Precio"
+                                data-nombre="@servicio.Nombre">
+
+                            @servicio.Nombre - RD$ @servicio.Precio
+
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Cantidad</label>
+
+                <input type="number"
+                       id="cantidad"
+                       value="1"
+                       min="1"
+                       class="form-control" />
+
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <button type="button"
+                    id="btnAgregar"
+                    class="btn-primary"
+                    style="position: relative; top: -10px;">
+                Agregar 
+
+            </button>
+
+        </div>
+
+        <hr />
+
+        <h4>Detalle Factura</h4>
+
+        <table class="table" style="position: relative; top: 10px;">
+
+            <thead>
+
+                <tr>
+                    <th>Servicio</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acción</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="detalleBody">
+            </tbody>
+
+        </table>
+
+        <div class="filters-card">
+
+            <h4>Vista Previa</h4>
+
+            <div style="padding:15px">
+
+                <p>
+                    <strong>Total:</strong>
+                    RD$
+                    <span id="totalFactura">
+                        0.00
+                    </span>
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Observaciones</label>
+
+            <textarea asp-for="Factura.Observaciones"
+                      rows="4"
+                      class="form-control">
+            </textarea>
+
+        </div>
+
+        <div id="hiddenInputs">
+        </div>
+
+        <div class="actions">
+
+            <button type="submit"
+                    class="btn-primary">
+
+                Facturar
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    let detalles = [];
+
+    document
+    .getElementById('btnAgregar')
+    .addEventListener('click', agregarServicio);
+
+    function agregarServicio()
+    {
+        const servicio =
+            document.getElementById('servicioSelect');
+
+        const cantidad =
+            parseInt(
+                document.getElementById('cantidad').value
+            );
+
+        const option =
+            servicio.options[
+                servicio.selectedIndex
+            ];
+
+        if (!option.value)
+        {
+            alert(
+                'Seleccione un servicio'
+            );
+
+            return;
+        }
+
+        const servicioId =
+            parseInt(option.value);
+
+        const existe =
+            detalles.some(
+                x => x.servicioId === servicioId
+            );
+
+        if (existe)
+        {
+            alert(
+                'Ese servicio ya fue agregado'
+            );
+
+            return;
+        }
+
+        detalles.push({
+            servicioId: servicioId,
+            nombre: option.dataset.nombre,
+            precio: parseFloat(
+                option.dataset.precio
+            ),
+            cantidad: cantidad
+        });
+
+        renderTabla();
+    }
+
+    function renderTabla()
+    {
+        const tbody =
+            document.getElementById(
+                'detalleBody'
+            );
+
+        const hidden =
+            document.getElementById(
+                'hiddenInputs'
+            );
+
+        tbody.innerHTML = '';
+        hidden.innerHTML = '';
+
+        let total = 0;
+
+        detalles.forEach((item,index) =>
+        {
+            const subtotal =
+                item.precio *
+                item.cantidad;
+
+            total += subtotal;
+
+            tbody.innerHTML += `
+                <tr>
+
+                    <td>${item.nombre}</td>
+
+                    <td>
+                        RD$ ${item.precio.toFixed(2)}
+                    </td>
+
+                    <td>
+                        ${item.cantidad}
+                    </td>
+
+                    <td>
+                        RD$ ${subtotal.toFixed(2)}
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn-editAnular"
+                            onclick="eliminar(${index})">
+
+                            Eliminar
+
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+
+            hidden.innerHTML += `
+                <input
+                    type="hidden"
+                    name="Factura.Detalles[${index}].ServicioId"
+                    value="${item.servicioId}" />
+
+                <input
+                    type="hidden"
+                    name="Factura.Detalles[${index}].Cantidad"
+                    value="${item.cantidad}" />
+            `;
+        });
+
+        document
+            .getElementById(
+                'totalFactura'
+            )
+            .innerText =
+            total.toFixed(2);
+    }
+
+    function eliminar(index)
+    {
+        detalles.splice(index,1);
+
+        renderTabla();
+    }
+
+</script>

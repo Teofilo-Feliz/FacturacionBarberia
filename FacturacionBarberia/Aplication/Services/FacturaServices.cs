@@ -125,7 +125,8 @@ namespace FacturacionBarberia.Aplication.Services
             catch (Exception ex)
             {
                 response.Successful = false;
-                response.Message = ex.Message;
+                response.Message =
+                    ex.ToString();
             }
 
             return response;

@@ -274,6 +274,22 @@ page-header {
     font-weight: 600;
 }
 
+.btn-anular {
+    background: #dc2626;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-anular:hover {
+        opacity: 0.9;
+    }
+
     .btn-edit:hover {
         background: #d97706;
     }
