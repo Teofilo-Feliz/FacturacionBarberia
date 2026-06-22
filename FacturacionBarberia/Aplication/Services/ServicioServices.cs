@@ -211,21 +211,6 @@ namespace FacturacionBarberia.Aplication.Services
                 if (request.Precio <= 0)
                     response.Errors.Add("El precio del servicio es obligatorio");
 
-                if (request.Estado == EstadoEnum.Inactivo)
-                {
-                    response.Successful = false;
-
-                    response.Errors.Add(
-                        "No se puede registrar un servicio en estado inactivo.");
-
-                    return response;
-                }
-
-                var existeServicio = await _repository.GetAsync(
-                    x => x.Nombre == request.Nombre);
-                if (existeServicio != null)
-                    response.Errors.Add("El nombre del servicio ya esta registrado");
-
                 if (response.ThereIsError)
                 {
                     response.Successful = false;

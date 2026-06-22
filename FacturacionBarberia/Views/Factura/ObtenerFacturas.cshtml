@@ -163,19 +163,21 @@ else
                     @if(factura.EstadoFactura ==
                         EstadoFacturaEnum.Activa)
                     {
-                        <form asp-action="Anular"
-                              asp-route-facturaId="@factura.FacturaId"
-                              method="post"
-                              style="display:inline;">
+                            <form asp-action="Anular"
+                                  asp-route-facturaId="@factura.FacturaId"
+                                  method="post"
+                                  class="form-anular"
+                                  style="display:inline;">
 
-                            <button type="submit"
-                                        class="btn-anular">
+                                <button type="submit"
+                                        class="btn-anular"
+                                        style="margin-left: 8px;">
 
-                                Anular
+                                    Anular
 
-                            </button>
+                                </button>
 
-                        </form>
+                            </form>
                 }
 
                     </td>
@@ -186,6 +188,41 @@ else
         </tbody>
 
     </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Selecciona todos los formularios que tengan la clase 'form-anular'
+            const formulariosAnular = document.querySelectorAll('.form-anular');
+
+            formulariosAnular.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    // 1. Detiene el envío inmediato del formulario
+                    e.preventDefault();
+
+                    // Obtener el ID de la factura desde la URL del action del formulario para personalizar el mensaje
+                    const urlParams = new URL(form.action, window.location.origin);
+                    const facturaId = urlParams.searchParams.get('facturaId') || '';
+
+                    // 2. Disparar la alerta de confirmación
+                    Swal.fire({
+                        title: '¿Está seguro de anular esta factura?',
+                        text: `Esta acción cambiará el estado de la factura #${facturaId} a Anulada y no se puede revertir.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33', // Color rojo para indicar una acción destructiva
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, anular',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        // 3. Si el usuario confirma, se envía ESTE formulario específico
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 }
 
 

@@ -46,7 +46,9 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             TempData["Success"] = result.Message;
 
-            return RedirectToAction(nameof(Crear));
+            return RedirectToAction(
+               nameof(Detalle),
+            new { facturaId = result.Data.FacturaId });
         }
 
         [HttpGet]

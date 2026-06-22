@@ -68,7 +68,7 @@
 
                 <label>Servicio</label>
 
-                <select id="servicioSelect" required
+                <select id="servicioSelect" 
                         class="form-control">
 
                     <option value="">
@@ -187,150 +187,136 @@
 </div>
 
 <script>
-
     let detalles = [];
 
-    document
-    .getElementById('btnAgregar')
-    .addEventListener('click', agregarServicio);
+    document.getElementById('btnAgregar').addEventListener('click', agregarServicio);
 
-    function agregarServicio()
-    {
-        const servicio =
-            document.getElementById('servicioSelect');
+    function agregarServicio() {
+        const servicio = document.getElementById('servicioSelect');
+        const cantidadInput = document.getElementById('cantidad');
+        const cantidad = parseInt(cantidadInput.value);
+        const option = servicio.options[servicio.selectedIndex];
 
-        const cantidad =
-            parseInt(
-                document.getElementById('cantidad').value
-            );
-
-        const option =
-            servicio.options[
-                servicio.selectedIndex
-            ];
-
-        if (!option.value)
-        {
-            alert(
-                'Seleccione un servicio'
-            );
-
+        if (!option.value) {
+            // Reemplazado alert por SweetAlert2
+            Swal.fire('Atención', 'Seleccione un servicio válido', 'warning');
             return;
         }
 
-        const servicioId =
-            parseInt(option.value);
+        if (isNaN(cantidad) || cantidad < 1) {
+            Swal.fire('Atención', 'La cantidad debe ser mayor o igual a 1', 'warning');
+            return;
+        }
 
-        const existe =
-            detalles.some(
-                x => x.servicioId === servicioId
-            );
+        const servicioId = parseInt(option.value);
+        const existe = detalles.some(x => x.servicioId === servicioId);
 
-        if (existe)
-        {
-            alert(
-                'Ese servicio ya fue agregado'
-            );
-
+        if (existe) {
+            // Reemplazado alert por SweetAlert2
+            Swal.fire('Atención', 'Ese servicio ya fue agregado a la lista', 'warning');
             return;
         }
 
         detalles.push({
             servicioId: servicioId,
             nombre: option.dataset.nombre,
-            precio: parseFloat(
-                option.dataset.precio
-            ),
+            precio: parseFloat(option.dataset.precio),
             cantidad: cantidad
         });
+
+        // Limpiar selección para mejorar UX
+        servicio.value = "";
+        cantidadInput.value = "1";
 
         renderTabla();
     }
 
-    function renderTabla()
-    {
-        const tbody =
-            document.getElementById(
-                'detalleBody'
-            );
-
-        const hidden =
-            document.getElementById(
-                'hiddenInputs'
-            );
+    function renderTabla() {
+        const tbody = document.getElementById('detalleBody');
+        const hidden = document.getElementById('hiddenInputs');
 
         tbody.innerHTML = '';
         hidden.innerHTML = '';
 
         let total = 0;
 
-        detalles.forEach((item,index) =>
-        {
-            const subtotal =
-                item.precio *
-                item.cantidad;
-
+        detalles.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad;
             total += subtotal;
 
             tbody.innerHTML += `
                 <tr>
-
                     <td>${item.nombre}</td>
-
+                    <td>RD$ ${item.precio.toFixed(2)}</td>
+                    <td>${item.cantidad}</td>
+                    <td>RD$ ${subtotal.toFixed(2)}</td>
                     <td>
-                        RD$ ${item.precio.toFixed(2)}
-                    </td>
-
-                    <td>
-                        ${item.cantidad}
-                    </td>
-
-                    <td>
-                        RD$ ${subtotal.toFixed(2)}
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            class="btn-editAnular"
-                            onclick="eliminar(${index})">
-
+                        <button type="button" class="btn-editAnular" onclick="eliminar(${index})">
                             Eliminar
-
                         </button>
-
                     </td>
-
                 </tr>
             `;
 
             hidden.innerHTML += `
-                <input
-                    type="hidden"
-                    name="Factura.Detalles[${index}].ServicioId"
-                    value="${item.servicioId}" />
-
-                <input
-                    type="hidden"
-                    name="Factura.Detalles[${index}].Cantidad"
-                    value="${item.cantidad}" />
+                <input type="hidden" name="Factura.Detalles[${index}].ServicioId" value="${item.servicioId}" />
+                <input type="hidden" name="Factura.Detalles[${index}].Cantidad" value="${item.cantidad}" />
             `;
         });
 
-        document
-            .getElementById(
-                'totalFactura'
-            )
-            .innerText =
-            total.toFixed(2);
+        document.getElementById('totalFactura').innerText = total.toFixed(2);
     }
 
-    function eliminar(index)
-    {
-        detalles.splice(index,1);
-
+    function eliminar(index) {
+        detalles.splice(index, 1);
         renderTabla();
     }
 
+    // Manejador del Submit
+    document.getElementById('facturaForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Detiene el envío inmediato
+        mostrarConfirmacion();
+    });
+
+    function mostrarConfirmacion() {
+        // 1. Declarar variables al inicio de la función
+        const clienteSelect = document.querySelector('[name="Factura.ClienteId"]');
+        const formaPagoSelect = document.querySelector('[name="Factura.FormaPago"]');
+        const totalText = document.getElementById('totalFactura').innerText;
+
+        // 2. Validaciones previas
+        if (!clienteSelect.value) {
+            Swal.fire('Error', 'Debe seleccionar un cliente', 'error');
+            return;
+        }
+
+        if (!formaPagoSelect.value) {
+            Swal.fire('Error', 'Debe seleccionar una forma de pago', 'error');
+            return;
+        }
+
+        if (detalles.length === 0) {
+            Swal.fire('Error', 'Debe agregar al menos un servicio al detalle', 'error');
+            return;
+        }
+
+        const clienteTexto = clienteSelect.options[clienteSelect.selectedIndex].text;
+
+        // 3. Alerta de confirmación de SweetAlert2
+        Swal.fire({
+            title: '¿Confirmar Factura?',
+            html: `Se generará la factura para <strong>${clienteTexto}</strong> <br> por un total de <strong>RD$ ${totalText}</strong>.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, facturar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Envía el formulario programáticamente si el usuario acepta
+                document.getElementById('facturaForm').submit();
+            }
+        });
+    }
 </script>

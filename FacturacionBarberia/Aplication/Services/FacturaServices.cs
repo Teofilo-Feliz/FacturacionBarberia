@@ -141,6 +141,63 @@ namespace FacturacionBarberia.Aplication.Services
             {
                 var facturas = await _facturaRepository.GetAllAsync();
 
+                if (request.FacturaId.HasValue)
+                {
+                    facturas = facturas
+                        .Where(x => x.FacturaId == request.FacturaId)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Cliente))
+                {
+                    facturas = facturas
+                        .Where(x => x.Cliente != null &&
+                                    x.Cliente.Nombre.Contains(
+                                        request.Cliente,
+                                        StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Usuario))
+                {
+                    facturas = facturas
+                        .Where(x => x.Usuario != null &&
+                                    x.Usuario.UserName.Contains(
+                                    request.Usuario,
+                                    StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                if (request.FechaDesde.HasValue)
+                {
+                    facturas = facturas
+                        .Where(x => x.FechaFactura.Date >= request.FechaDesde.Value.Date)
+                        .ToList();
+                }
+
+                if (request.FechaHasta.HasValue)
+                {
+                    facturas = facturas
+                        .Where(x => x.FechaFactura.Date <= request.FechaHasta.Value.Date)
+                        .ToList();
+                }
+
+                if (request.FormaPago.HasValue)
+                {
+                    facturas = facturas
+                        .Where(x => x.FormaPago == request.FormaPago)
+                        .ToList();
+                }
+
+                if (request.EstadoFactura.HasValue)
+                {
+                    facturas = facturas
+                        .Where(x => x.EstadoFactura == request.EstadoFactura)
+                        .ToList();
+                }
+
+
+
                 response.DataList = facturas.Select(x => new ObtenerFacturaResponse
                 {
                     FacturaId = x.FacturaId,
@@ -189,6 +246,7 @@ namespace FacturacionBarberia.Aplication.Services
                     Usuario = facturasDetalles.Usuario.UserName,
                     FechaFactura = facturasDetalles.FechaFactura,
                     Total = facturasDetalles.Total,
+                    Estado = facturasDetalles.EstadoFactura,
                     Detalles = facturasDetalles.Detalles
                     .Select(x => new DetalleFacturaResponse
                     {

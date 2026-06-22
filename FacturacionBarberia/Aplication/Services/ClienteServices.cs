@@ -251,10 +251,7 @@ namespace FacturacionBarberia.Aplication.Services
                     return response;
                 }
 
-                clientes.Nombre = request.Nombre?.Trim()!;
-                clientes.Telefono = request.Telefono?.Trim()!;
-                clientes.Correo = request.Correo?.Trim().ToLower()!;
-                clientes.Estado = request.Estado;
+               
 
                 if (string.IsNullOrWhiteSpace(request.Nombre))
                 {
