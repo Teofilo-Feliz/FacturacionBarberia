@@ -304,10 +304,6 @@ namespace FacturacionBarberia.Aplication.Services
                     return response;
                 }
 
-
-
-
-
                 _repository.Update(clientes);
                 await _unitOfWork.SaveChangesAsync();
 

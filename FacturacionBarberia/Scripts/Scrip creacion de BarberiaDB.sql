@@ -314,3 +314,112 @@ DEFAULT 'Activa';
 
 select * from dbo.Facturas
 select * from dbo.Clientes
+select * from dbo.DetalleFacturas
+select * from dbo.facturas
+
+-- Scrips de procedimientos almacenados
+CREATE PROCEDURE Dashboard_ObtenerResumen
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        FacturadoHoy =
+            ISNULL(
+                (
+                    SELECT SUM(Total)
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND CAST(FechaFactura AS DATE) = CAST(GETDATE() AS DATE)
+                ),0),
+
+        FacturadoSemana =
+            ISNULL(
+                (
+                    SELECT SUM(Total)
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND DATEPART(YEAR, FechaFactura) = DATEPART(YEAR, GETDATE())
+                    AND DATEPART(WEEK, FechaFactura) = DATEPART(WEEK, GETDATE())
+                ),0),
+
+        FacturadoMes =
+            ISNULL(
+                (
+                    SELECT SUM(Total)
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND YEAR(FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(FechaFactura) = MONTH(GETDATE())
+                ),0),
+
+        ServiciosMes =
+            ISNULL(
+                (
+                    SELECT SUM(fd.Cantidad)
+                    FROM DetalleFacturas fd
+                    INNER JOIN Facturas f
+                        ON fd.FacturaId = f.FacturaId
+                    WHERE f.EstadoFactura = 'Activa'
+                    AND YEAR(f.FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(f.FechaFactura) = MONTH(GETDATE())
+                ),0);
+END
+GO
+
+CREATE PROCEDURE Dashboard_ObtenerIngresosSemana
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Dia = DATENAME(WEEKDAY, FechaFactura),
+        Total = SUM(Total)
+    FROM Facturas
+    WHERE EstaEliminado = 0
+        AND EstadoFactura = 'Activa'
+        AND FechaFactura >= DATEADD(DAY, -7, GETDATE())
+    GROUP BY
+        DATENAME(WEEKDAY, FechaFactura),
+        DATEPART(WEEKDAY, FechaFactura)
+    ORDER BY DATEPART(WEEKDAY, FechaFactura);
+END
+GO
+
+CREATE PROCEDURE Dashboard_ObtenerIngresosMeses
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Mes = DATENAME(MONTH, FechaFactura),
+        Total = SUM(Total)
+    FROM Facturas
+    WHERE EstaEliminado = 0
+        AND EstadoFactura = 'Activa'
+        AND YEAR(FechaFactura) = YEAR(GETDATE())
+    GROUP BY
+        DATENAME(MONTH, FechaFactura),
+        MONTH(FechaFactura)
+    ORDER BY MONTH(FechaFactura);
+END
+GO
+
+CREATE PROCEDURE Dashboard_ObtenerTopServicios
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP 5
+        s.Nombre AS Servicio,
+        Cantidad = SUM(df.Cantidad)
+    FROM DetalleFacturas df
+    INNER JOIN Facturas f ON f.FacturaId = df.FacturaId
+    INNER JOIN Servicios s ON s.ServicioId = df.ServicioId
+    WHERE f.EstaEliminado = 0
+        AND f.EstadoFactura = 'Activa'
+        AND s.EstaEliminado = 0
+    GROUP BY s.Nombre
+    ORDER BY SUM(df.Cantidad) DESC;
+END
+GO

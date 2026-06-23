@@ -360,16 +360,6 @@ namespace FacturacionBarberia.Aplication.Services
                 if (!Enum.IsDefined(typeof(EstadoEnum), request.Estado))
                     response.Errors.Add("El estado seleccionado no es válido.");
 
-                if (request.Estado == EstadoEnum.Inactivo)
-                {
-                    response.Successful = false;
-
-                    response.Errors.Add(
-                        "No se puede registrar un usuario en estado inactivo.");
-
-                    return response;
-                }
-
 
 
                 if (response.ThereIsError)
