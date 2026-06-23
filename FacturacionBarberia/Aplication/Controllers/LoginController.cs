@@ -1,4 +1,5 @@
-﻿using FacturacionBarberia.Aplication.DTO;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +10,7 @@ using System.Security.Claims;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-
+    [Authorize]
     public class LoginController : Controller
     {
         private readonly IUsuario _usuarioServices;
@@ -57,6 +58,7 @@ namespace FacturacionBarberia.Aplication.Controllers
                 return View(request);
             }
 
+            
             var claims = new List<Claim>
             {
                 new Claim(
@@ -82,9 +84,19 @@ namespace FacturacionBarberia.Aplication.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal);
 
-            return RedirectToAction(
-                "Index",
-                "Dashboard");
+            var role = result.Data!.Rol.ToString();
+
+            switch (role)
+            {
+                case "Administrador":
+                    return RedirectToAction("Index", "Dashboard");
+
+                case "Cajero":
+                    return RedirectToAction("Crear", "Factura");
+
+                default:
+                    return RedirectToAction("AccessDenied", "Login");
+            }
         }
 
        

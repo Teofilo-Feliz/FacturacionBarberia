@@ -1,11 +1,13 @@
 ﻿using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
+    [Authorize]
     public class FacturaController : Controller
     {
         private readonly IFactura _factura;
@@ -18,7 +20,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             _cliente = cliente;
             _servicio = servicio;
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public async Task<IActionResult> Crear()
         {
@@ -28,7 +30,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return View(model);
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpPost]
         public async Task<IActionResult> Crear(CrearFacturaViewModel model)
         {
@@ -50,7 +52,7 @@ namespace FacturacionBarberia.Aplication.Controllers
                nameof(Detalle),
             new { facturaId = result.Data.FacturaId });
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public async Task<IActionResult> ObtenerFacturas(
       ConsultaViewModel<ObtenerFacturaRequest,
@@ -68,7 +70,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return View(model);
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public async Task<IActionResult> Detalle(int facturaId)
         {
@@ -84,7 +86,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return View(result.Data);
         }
-
+        [Authorize(Roles = " Administrador")]
         [HttpPost]
         public async Task<IActionResult> Anular(int facturaId)
         {

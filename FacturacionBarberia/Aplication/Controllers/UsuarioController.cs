@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public class UsuarioController : Controller
     {
         private readonly IUsuario _usuarioServices;
@@ -17,6 +17,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             _usuarioServices = usuarioServices;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public IActionResult Crear()
         {
@@ -28,7 +29,7 @@ namespace FacturacionBarberia.Aplication.Controllers
         {
             return await ObtenerUsuarios(model);
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Crear(
         UsuarioRequest request)
@@ -57,6 +58,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             return RedirectToAction(nameof(Crear));
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ObtenerUsuarios(
      ConsultaViewModel<ObtenerUsuarioRequest, ObtenerUsuarioResponse> model)
         {
@@ -74,6 +76,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
@@ -92,6 +95,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             return View(result.Data);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Editar(
          EditarUsuarioRequest request)

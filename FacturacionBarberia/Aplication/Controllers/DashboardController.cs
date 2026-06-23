@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public class DashboardController : Controller
     {
         private readonly IDashboard _dashboard;
@@ -15,7 +15,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             _dashboard = dashboard;
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
             var model = new DashboardViewModel

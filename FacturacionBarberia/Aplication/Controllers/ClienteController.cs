@@ -1,11 +1,13 @@
 ﻿using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
+    [Authorize]
     public class ClienteController : Controller
     {
         private readonly ICliente _cliente;
@@ -15,12 +17,13 @@ namespace FacturacionBarberia.Aplication.Controllers
             _cliente = cliente;
         }
 
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public IActionResult Crear()
         {
             return View();
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpPost]
         public async Task<IActionResult> Crear(ClienteRequest request)
         {
@@ -45,7 +48,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return RedirectToAction(nameof(Crear));
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public async Task<IActionResult> ObtenerClientes(
             ConsultaViewModel<ObtenerClienteRequest, ObtenerClienteResponse> model)
@@ -63,7 +66,7 @@ namespace FacturacionBarberia.Aplication.Controllers
             return View("~/Views/Cliente/ObtenerClientes.cshtml", model);
 
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
@@ -78,7 +81,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return View(result.Data);
         }
-
+        [Authorize(Roles = "Cajero, Administrador")]
         [HttpPost]
         public async Task<IActionResult> Editar(EditarClienteRequest request)
         {
