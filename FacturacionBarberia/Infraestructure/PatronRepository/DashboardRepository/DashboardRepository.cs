@@ -1,7 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using FacturacionBarberia.Aplication.DTO;
+﻿using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Infraestructure.Data;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacturacionBarberia.Infraestructure.PatronRepository.DashboardRepository

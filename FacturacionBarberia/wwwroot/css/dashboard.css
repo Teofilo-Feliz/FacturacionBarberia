@@ -1,26 +1,131 @@
-﻿/* ===== DASHBOARD ===== */
+﻿/* ===================================
+   DASHBOARD BARBERIA
+=================================== */
+
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    transition: all .25s ease;
+    border: none;
+    height: 100%;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+
 .dashboard-title {
-    margin-bottom: 30px;
+    color: #6c757d;
+    font-size: .95rem;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
-.menu-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+.dashboard-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
 }
 
-.menu-card {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    text-align: center;
-    text-decoration: none;
-    color: #1e293b;
-    font-size: 20px;
+.chart-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    border: none;
+    transition: all .25s ease;
+}
+
+    .chart-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+    .dashboard-header h2 {
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .dashboard-header p {
+        color: #6c757d;
+    }
+
+/* KPI colores */
+
+.kpi-primary {
+    color: #0d6efd;
+}
+
+.kpi-success {
+    color: #198754;
+}
+
+.kpi-warning {
+    color: #fd7e14;
+}
+
+/* Iconos KPI */
+
+.kpi-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.kpi-icon-primary {
+    background: rgba(13,110,253,.12);
+    color: #0d6efd;
+}
+
+.kpi-icon-success {
+    background: rgba(25,135,84,.12);
+    color: #198754;
+}
+
+.kpi-icon-warning {
+    background: rgba(253,126,20,.12);
+    color: #fd7e14;
+}
+
+/* Títulos de gráficas */
+
+.chart-title {
+    font-size: 1.1rem;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(0,0,0,.05);
-    transition: .2s;
+    color: #212529;
+    margin-bottom: 20px;
 }
 
-  
+/* Responsive */
 
+@media (max-width: 768px) {
+
+    .dashboard-value {
+        font-size: 1.6rem;
+    }
+
+    .chart-container {
+        height: 280px;
+    }
+
+    .kpi-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.3rem;
+    }
+}

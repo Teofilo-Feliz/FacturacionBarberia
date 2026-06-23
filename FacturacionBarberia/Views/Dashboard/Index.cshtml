@@ -1,126 +1,258 @@
 ﻿@using FacturacionBarberia.Aplication.ViewModel
+@using System.Text.Json
 @model DashboardViewModel
 
-<h1>Bienvenido @User.Identity.Name</h1>
+<h1>Bienvenido @User.Identity?.Name</h1>
+
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="row mb-4">
+<div class="container-fluid">
 
-    <div class="col-md-4">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <h5>Ingresos Hoy</h5>
-                <h3>@Model.Resumen?.FacturadoHoy.ToString("C")</h3>
+    <div class="mb-4">
+        <h2 class="fw-bold">Dashboard</h2>
+       
+    </div>
+
+    <!-- KPI -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="dashboard-title">
+                            Ingresos Hoy
+                        </div>
+
+                        <div class="dashboard-value text-primary">
+                            RD$ @Model.Resumen?.FacturadoHoy.ToString("N2")
+                        </div>
+                    </div>
+
+                    <div class="fs-1">
+                        💵
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5>Ingresos Mes</h5>
-                <h3>@Model.Resumen?.FacturadoMes.ToString("C")</h3>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="dashboard-title">
+                            Ingresos del Mes
+                        </div>
+
+                        <div class="dashboard-value text-success">
+                            RD$ @Model.Resumen?.FacturadoMes.ToString("N2")
+                        </div>
+                    </div>
+
+                    <div class="fs-1">
+                        📈
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <h5>Servicios Mes</h5>
-                <h3>@Model.Resumen?.ServiciosMes</h3>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="dashboard-title">
+                            Servicios del Mes
+                        </div>
+
+                        <div class="dashboard-value text-warning">
+                            @Model.Resumen?.ServiciosMes
+                        </div>
+                    </div>
+
+                    <div class="fs-1">
+                        ✂️
+                    </div>
+                </div>
             </div>
         </div>
+
+    </div>
+
+    <!-- Segunda fila -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-8">
+            <div class="chart-card p-4">
+                <h5 class="mb-4">
+                    Ingresos de la Semana
+                </h5>
+
+                <div class="chart-container">
+                    <canvas id="chartSemana"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="chart-card p-4">
+                <h5 class="mb-4">
+                    Top Servicios
+                </h5>
+
+                <div class="chart-container">
+                    <canvas id="chartServicios"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tercera fila -->
+    <div class="row">
+
+        <div class="col-12">
+            <div class="chart-card p-4">
+                <h5 class="mb-4">
+                    Tendencia de Ingresos
+                </h5>
+
+                <div class="chart-container">
+                    <canvas id="chartMeses"></canvas>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5>Ingresos de la Semana</h5>
-        <canvas id="chartSemana"></canvas>
-    </div>
-</div>
+@section Scripts {
 
-<script>
-    const semanaLabels = @Html.Raw(Json.Serialize(Model.IngresosSemana.Select(x => x.Dia)));
-    const semanaData = @Html.Raw(Json.Serialize(Model.IngresosSemana.Select(x => x.Total)));
+    <script>
 
-    new Chart(document.getElementById('chartSemana'), {
-        type: 'bar',
-        data: {
-            labels: semanaLabels,
-            datasets: [{
-                label: 'Ingresos',
-                data: semanaData,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)'
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
+        const semanaLabels = @Html.Raw(
+                    JsonSerializer.Serialize(
+                            Model.IngresosSemana.Select(x => x.Dia)
+                    )
+            );
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5>Ingresos del Año</h5>
-        <canvas id="chartMeses"></canvas>
-    </div>
-</div>
+    const semanaData = @Html.Raw(
+                JsonSerializer.Serialize(
+                        Model.IngresosSemana.Select(x => x.Total)
+                )
+        );
 
-<script>
-    const mesesLabels = @Html.Raw(Json.Serialize(Model.IngresosMeses.Select(x => x.Mes)));
-    const mesesData = @Html.Raw(Json.Serialize(Model.IngresosMeses.Select(x => x.Total)));
+    const mesesLabels = @Html.Raw(
+                JsonSerializer.Serialize(
+                        Model.IngresosMeses.Select(x => x.Mes)
+                )
+        );
 
-    new Chart(document.getElementById('chartMeses'), {
-        type: 'line',
-        data: {
-            labels: mesesLabels,
-            datasets: [{
-                label: 'Ingresos',
-                data: mesesData,
-                borderColor: 'green',
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
+    const mesesData = @Html.Raw(
+                JsonSerializer.Serialize(
+                        Model.IngresosMeses.Select(x => x.Total)
+                )
+        );
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5>Top Servicios</h5>
-        <canvas id="chartServicios"></canvas>
-    </div>
-</div>
+    const serviciosLabels = @Html.Raw(
+                JsonSerializer.Serialize(
+                        Model.TopServicios.Select(x => x.Servicio)
+                )
+        );
 
-<script>
-    const serviciosLabels = @Html.Raw(Json.Serialize(Model.TopServicios.Select(x => x.Servicio)));
-    const serviciosData = @Html.Raw(Json.Serialize(Model.TopServicios.Select(x => x.Cantidad)));
+    const serviciosData = @Html.Raw(
+                JsonSerializer.Serialize(
+                        Model.TopServicios.Select(x => x.Cantidad)
+                )
+        );
 
-    new Chart(document.getElementById('chartServicios'), {
-        type: 'pie',
-        data: {
-            labels: serviciosLabels,
-            datasets: [{
-                data: serviciosData,
-                backgroundColor: [
-                    'red',
-                    'blue',
-                    'green',
-                    'orange',
-                    'purple'
-                ]
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
+
+
+    // =====================
+    // INGRESOS SEMANA
+    // =====================
+
+        new Chart(
+            document.getElementById('chartSemana'),
+            {
+                type: 'bar',
+                data: {
+                    labels: semanaLabels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: semanaData,
+                        borderRadius: 12,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        );
+
+
+        // =====================
+        // TOP SERVICIOS
+        // =====================
+
+        new Chart(
+            document.getElementById('chartServicios'),
+            {
+                type: 'doughnut',
+                data: {
+                    labels: serviciosLabels,
+                    datasets: [{
+                        data: serviciosData
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            }
+        );
+
+
+        // =====================
+        // INGRESOS MENSUALES
+        // =====================
+
+        new Chart(
+            document.getElementById('chartMeses'),
+            {
+                type: 'line',
+                data: {
+                    labels: mesesLabels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: mesesData,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            }
+        );
+
+    </script>
+
+}

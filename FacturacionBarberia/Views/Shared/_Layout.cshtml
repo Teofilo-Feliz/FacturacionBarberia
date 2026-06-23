@@ -8,9 +8,8 @@
 
     <title>Barber Manager</title>
 
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
 
@@ -168,13 +167,14 @@
         }
 
         @RenderBody()
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </main>
 
     @RenderSection("Scripts", required: false)
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 
 </body>
 </html>
