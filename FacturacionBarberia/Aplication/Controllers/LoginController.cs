@@ -84,7 +84,7 @@ namespace FacturacionBarberia.Aplication.Controllers
 
             return RedirectToAction(
                 "Index",
-                "Home");
+                "Dashboard");
         }
 
        

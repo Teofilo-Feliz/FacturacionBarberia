@@ -1,4 +1,5 @@
-﻿using FacturacionBarberia.Domain.Models.Entities;
+﻿using FacturacionBarberia.Aplication.DTO;
+using FacturacionBarberia.Domain.Models.Entities;
 using FacturacionBarberia.Infraestructure.Audit;
 using Microsoft.EntityFrameworkCore;
 
@@ -74,7 +75,7 @@ namespace FacturacionBarberia.Infraestructure.Data
         public DbSet<Servicio> Servicios { get; set; }
         public DbSet<Factura> Facturas { get; set; }
         public DbSet<DetalleFactura> DetallesFactura { get; set; }
-
+       
         protected override void OnModelCreating(
         ModelBuilder modelBuilder)
         {
@@ -95,7 +96,15 @@ namespace FacturacionBarberia.Infraestructure.Data
 
             modelBuilder.Entity<Factura>()
                 .HasQueryFilter(x => !x.EstaEliminado);
+
+            modelBuilder.Entity<DashboardObtenerResumen>().HasNoKey();
+            modelBuilder.Entity<DashboardObtenerIngresosSemana>().HasNoKey();
+            modelBuilder.Entity<DashboardObtenerIngresosMeses>().HasNoKey();
+            modelBuilder.Entity<DashboardObtenerTopServicios>().HasNoKey();
         }
+
+      
+        
 
 
 

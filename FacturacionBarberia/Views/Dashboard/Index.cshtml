@@ -1,0 +1,126 @@
+﻿@using FacturacionBarberia.Aplication.ViewModel
+@model DashboardViewModel
+
+<h1>Bienvenido @User.Identity.Name</h1>
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5>Ingresos Hoy</h5>
+                <h3>@Model.Resumen?.FacturadoHoy.ToString("C")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5>Ingresos Mes</h5>
+                <h3>@Model.Resumen?.FacturadoMes.ToString("C")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5>Servicios Mes</h5>
+                <h3>@Model.Resumen?.ServiciosMes</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Ingresos de la Semana</h5>
+        <canvas id="chartSemana"></canvas>
+    </div>
+</div>
+
+<script>
+    const semanaLabels = @Html.Raw(Json.Serialize(Model.IngresosSemana.Select(x => x.Dia)));
+    const semanaData = @Html.Raw(Json.Serialize(Model.IngresosSemana.Select(x => x.Total)));
+
+    new Chart(document.getElementById('chartSemana'), {
+        type: 'bar',
+        data: {
+            labels: semanaLabels,
+            datasets: [{
+                label: 'Ingresos',
+                data: semanaData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Ingresos del Año</h5>
+        <canvas id="chartMeses"></canvas>
+    </div>
+</div>
+
+<script>
+    const mesesLabels = @Html.Raw(Json.Serialize(Model.IngresosMeses.Select(x => x.Mes)));
+    const mesesData = @Html.Raw(Json.Serialize(Model.IngresosMeses.Select(x => x.Total)));
+
+    new Chart(document.getElementById('chartMeses'), {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [{
+                label: 'Ingresos',
+                data: mesesData,
+                borderColor: 'green',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Top Servicios</h5>
+        <canvas id="chartServicios"></canvas>
+    </div>
+</div>
+
+<script>
+    const serviciosLabels = @Html.Raw(Json.Serialize(Model.TopServicios.Select(x => x.Servicio)));
+    const serviciosData = @Html.Raw(Json.Serialize(Model.TopServicios.Select(x => x.Cantidad)));
+
+    new Chart(document.getElementById('chartServicios'), {
+        type: 'pie',
+        data: {
+            labels: serviciosLabels,
+            datasets: [{
+                data: serviciosData,
+                backgroundColor: [
+                    'red',
+                    'blue',
+                    'green',
+                    'orange',
+                    'purple'
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
