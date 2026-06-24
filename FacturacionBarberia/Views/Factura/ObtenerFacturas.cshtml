@@ -1,4 +1,9 @@
-﻿@model ConsultaViewModel<ObtenerFacturaRequest, ObtenerFacturaResponse>
+﻿@{
+    bool esAdmin = User.IsInRole("Administrador");
+}
+
+
+@model ConsultaViewModel<ObtenerFacturaRequest, ObtenerFacturaResponse>
 @using FacturacionBarberia.Aplication.ViewModel
 @using FacturacionBarberia.Domain.Models.Enum
 
@@ -161,7 +166,7 @@ else
                     </a>
 
                     @if(factura.EstadoFactura ==
-                        EstadoFacturaEnum.Activa)
+                        EstadoFacturaEnum.Activa && User.IsInRole("Administrador"))
                     {
                             <form asp-action="Anular"
                                   asp-route-facturaId="@factura.FacturaId"

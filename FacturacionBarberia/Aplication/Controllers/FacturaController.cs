@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cajero, Administrador")]
     public class FacturaController : Controller
     {
         private readonly IFactura _factura;

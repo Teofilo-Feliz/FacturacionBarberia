@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    bool esAdmin = User.IsInRole("Administrador");
+    bool esCajero = User.IsInRole("Cajero");
+}
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -8,19 +13,18 @@
 
     <title>Barber Manager</title>
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/dashboard.css"
+          asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
-
 </head>
 
 <body>
-
-    @{
-        var controller =
-        ViewContext.RouteData.Values["controller"]?.ToString();
-    }
 
     <header class="header">
 
@@ -28,113 +32,129 @@
             💈 Barber Manager
         </div>
 
-        <nav class="nav-menu">
-
-            <a asp-controller="Dashboard"
-               asp-action="Index">
-                Inicio
-            </a>
-
-            <div class="dropdown">
-
-                <a href="#">
-                    Usuarios 
-                </a>
-
-                <div class="dropdown-content">
-
-                    <a asp-controller="Usuario"
-                       asp-action="Crear">
-                        Crear Usuario
-                    </a>
-
-                    <a asp-controller="Usuario"
-                       asp-action="ObtenerUsuarios">
-                        Consultar Usuarios
-                    </a>
-
-                </div>
-
-            </div>
-
-            <div class="dropdown">
-
-                <a href="#">
-                    Clientes 
-                </a>
-
-                <div class="dropdown-content">
-
-                    <a asp-controller="Cliente"
-                       asp-action="Crear">
-                        Crear Cliente
-                    </a>
-
-                    <a asp-controller="Cliente"
-                       asp-action="ObtenerClientes">
-                        Consultar Clientes
-                    </a>
-
-                </div>
-
-            </div>
-
-            <div class="dropdown">
-
-                <a href="#">
-                    Servicio
-                </a>
-
-                <div class="dropdown-content">
-
-                    <a asp-controller="Servicio"
-                       asp-action="Crear">
-                        Crear Servicio
-                    </a>
-
-                    <a asp-controller="Servicio"
-                       asp-action="ObtenerServicios">
-                         Consultar servicio
-                    </a>
-
-                </div>
-            </div>
-
-
-            <div class="dropdown">
-                <a href="#">
-                    Facturas
-                </a>
-
-                <div class="dropdown-content">
-                      <a asp-controller="Factura"
-                       asp-action="Crear">
-                        Facturar 
-                      </a>
-
-                    <a asp-controller="Factura"
-                       asp-action="ObtenerFacturas">
-                        Consultar Facturas
-                    </a>
-
-                   
-
-                 </div>
-            </div>
-           
-           
-
-        </nav>
-
-
         @if (User.Identity?.IsAuthenticated == true)
         {
+            <nav class="nav-menu">
+
+               
+                @if (esAdmin)
+                {
+                    <a asp-controller="Dashboard"
+                       asp-action="Index">
+                        Dashboard
+                    </a>
+                }
+
+               
+                @if (esAdmin)
+                {
+                    <div class="dropdown">
+
+                        <a href="#">
+                            Usuarios
+                        </a>
+
+                        <div class="dropdown-content">
+
+                            <a asp-controller="Usuario"
+                               asp-action="Crear">
+                                Crear Usuario
+                            </a>
+
+                            <a asp-controller="Usuario"
+                               asp-action="ObtenerUsuarios">
+                                Consultar Usuarios
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+               
+                @if (esAdmin || esCajero)
+                {
+                    <div class="dropdown">
+
+                        <a href="#">
+                            Clientes
+                        </a>
+
+                        <div class="dropdown-content">
+
+                            <a asp-controller="Cliente"
+                               asp-action="Crear">
+                                Crear Cliente
+                            </a>
+
+                            <a asp-controller="Cliente"
+                               asp-action="ObtenerClientes">
+                                Consultar Clientes
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+                
+                @if (esAdmin || esCajero)
+                {
+                    <div class="dropdown">
+
+                        <a href="#">
+                            Servicios
+                        </a>
+
+                        <div class="dropdown-content">
+
+                            <a asp-controller="Servicio"
+                               asp-action="Crear">
+                                Crear Servicio
+                            </a>
+
+                            <a asp-controller="Servicio"
+                               asp-action="ObtenerServicios">
+                                Consultar Servicios
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+            
+                @if (esAdmin || esCajero)
+                {
+                    <div class="dropdown">
+
+                        <a href="#">
+                            Facturas
+                        </a>
+
+                        <div class="dropdown-content">
+
+                            <a asp-controller="Factura"
+                               asp-action="Crear">
+                                Facturar
+                            </a>
+
+                            <a asp-controller="Factura"
+                               asp-action="ObtenerFacturas">
+                                Consultar Facturas
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+            </nav>
+
             <div class="header-right">
 
                 <span class="user-name">
-
                     @User.Identity.Name
-
                 </span>
 
                 <form asp-controller="Login"
@@ -143,9 +163,7 @@
 
                     <button type="submit"
                             class="btn-logout">
-
                         Salir
-
                     </button>
 
                 </form>
@@ -160,21 +178,25 @@
         @if (TempData["Success"] != null)
         {
             <div class="alert-success">
-
                 @TempData["Success"]
+            </div>
+        }
 
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-error">
+                @TempData["Error"]
             </div>
         }
 
         @RenderBody()
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </main>
 
-    @RenderSection("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    
+    @RenderSection("Scripts", required: false)
 
 </body>
 </html>

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cajero, Administrador")]
     public class ServicioController : Controller
     {
         private readonly IServicio _servicio;
