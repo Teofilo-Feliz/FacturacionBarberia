@@ -21,46 +21,8 @@ Razor Views
 
 Arquitectura del Proyecto
 
-El proyecto se encuentra organizado en capas siguiendo una estructura inspirada en Clean Architecture:
+El proyecto se encuentra organizado en capas siguiendo una estructura inspirada en Clean Architecture.
 
-FacturacionBarberia
-│
-├── Application
-│   ├── Controllers
-│   ├── Dependency
-│   ├── DTO
-│   ├── Helpers
-│   ├── Interfaces
-│   ├── Services
-│   └── ViewModel
-│
-├── Domain
-│   └── Models
-│       ├── Entities
-│       └── Enum
-│
-├── Infrastructure
-│   ├── Audit
-│   ├── Data
-│   ├── Dependency
-│   ├── PatronRepository
-│   │   ├── DashboardRepository
-│   │   ├── FacturaRepository
-│   │   └── GenericRepository
-│   └── UnitOfWork
-│
-├── Scripts
-│
-├── Views
-│   ├── Cliente
-│   ├── Dashboard
-│   ├── Factura
-│   ├── Login
-│   ├── Servicio
-│   ├── Usuario
-│   └── Shared
-│
-└── wwwroot
 
 Base de Datos
 
