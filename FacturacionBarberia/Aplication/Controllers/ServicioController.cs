@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using FacturacionBarberia.Aplication.DTO;
+﻿using FacturacionBarberia.Aplication.DTO;
 using FacturacionBarberia.Aplication.Interfaces;
 using FacturacionBarberia.Aplication.ViewModel;
 using Microsoft.AspNetCore.Authorization;

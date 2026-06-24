@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace FacturacionBarberia.Aplication.Controllers
 {
-    [Authorize]
+   
     public class LoginController : Controller
     {
         private readonly IUsuario _usuarioServices;
