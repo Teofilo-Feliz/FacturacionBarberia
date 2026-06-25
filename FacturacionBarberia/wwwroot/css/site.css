@@ -355,3 +355,12 @@ page-header {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+body.login-bg {
+    background-image: url('/Imagen/image.jfif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+}

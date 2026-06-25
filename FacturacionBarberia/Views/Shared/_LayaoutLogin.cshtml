@@ -6,24 +6,15 @@
 
     <title>Login - Barber Manager</title>
     @RenderSection("Styles", required: false)
-    @section Styles
-    {
-        <link rel="stylesheet"
-              href="~/css/login.css" />
-    }
+    
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
-    <link rel="stylesheet"
-          href="~/css/dashboard.css" />
-
-    <link rel="stylesheet"
-          href="~/css/usuario.css" />
-
+   
 </head>
 
-<body>
+<body class="login-bg">
 
     <main class="main-container">
         @RenderBody()
