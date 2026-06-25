@@ -108,7 +108,8 @@
                     <td>@servicio.Estado</td>
 
                     <td>
-
+                      @if (User.IsInRole("Administrador"))
+                      {
                         <a asp-action="Editar"
                            asp-route-id="@servicio.ServicioId"
                            class="btn-edit">
@@ -116,7 +117,7 @@
                             Editar
 
                         </a>
-
+                      }
                     </td>
 
                 </tr>
