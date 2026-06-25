@@ -1,11 +1,10 @@
-﻿@{
-    bool esAdmin = User.IsInRole("Administrador");
-}
-
-
-@model ConsultaViewModel<ObtenerFacturaRequest, ObtenerFacturaResponse>
+﻿@model ConsultaViewModel<ObtenerFacturaRequest, ObtenerFacturaResponse>
 @using FacturacionBarberia.Aplication.ViewModel
 @using FacturacionBarberia.Domain.Models.Enum
+
+@{
+    bool esAdmin = User.IsInRole("Administrador");
+}
 
 <form method="get"
     asp-action="ObtenerFacturas">
