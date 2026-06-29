@@ -1,130 +1,122 @@
-﻿@using FacturacionBarberia.Aplication.ViewModel
+@using FacturacionBarberia.Aplication.ViewModel
 @using System.Text.Json
 @model DashboardViewModel
 
-<h1>Bienvenido @User.Identity?.Name</h1>
-
-
 @{
     ViewData["Title"] = "Dashboard";
+
+    var resumen = Model.Resumen;
+    var ingresosSemana = Model.IngresosSemana ?? new();
+    var ingresosMeses = Model.IngresosMeses ?? new();
+    var topServicios = Model.TopServicios ?? new();
+    var tieneIngresosSemana = ingresosSemana.Any(x => x.Total > 0);
+    var tieneIngresosMeses = ingresosMeses.Any(x => x.Total > 0);
+    var tieneTopServicios = topServicios.Any(x => x.Cantidad > 0);
 }
 
-<div class="container-fluid">
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/dashboard.css"
+          asp-append-version="true" />
+}
 
-    <div class="mb-4">
-        <h2 class="fw-bold">Dashboard</h2>
-       
+<div class="dashboard-page">
+
+    <div class="dashboard-hero">
+        <div>
+            <span class="dashboard-eyebrow">Panel administrativo</span>
+            <h1>Dashboard</h1>
+            <p>Bienvenido @User.Identity?.Name. Revisa ingresos, servicios y tendencias del negocio.</p>
+        </div>
+
+        <a asp-controller="Factura"
+           asp-action="Crear"
+           class="dashboard-action">
+            Nueva factura
+        </a>
     </div>
 
-    <!-- KPI -->
-    <div class="row g-4 mb-4">
+    <div class="dashboard-kpi-grid">
 
-        <div class="col-md-4">
-            <div class="dashboard-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="dashboard-title">
-                            Ingresos Hoy
-                        </div>
-
-                        <div class="dashboard-value text-primary">
-                            RD$ @Model.Resumen?.FacturadoHoy.ToString("N2")
-                        </div>
-                    </div>
-
-                    <div class="fs-1">
-                        💵
-                    </div>
-                </div>
+        <div class="dashboard-card">
+            <div>
+                <div class="dashboard-title">Ingresos hoy</div>
+                <div class="dashboard-value kpi-primary">RD$ @(resumen?.FacturadoHoy.ToString("N2") ?? "0.00")</div>
             </div>
+            <div class="kpi-icon kpi-icon-primary">RD$</div>
         </div>
 
-        <div class="col-md-4">
-            <div class="dashboard-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="dashboard-title">
-                            Ingresos del Mes
-                        </div>
-
-                        <div class="dashboard-value text-success">
-                            RD$ @Model.Resumen?.FacturadoMes.ToString("N2")
-                        </div>
-                    </div>
-
-                    <div class="fs-1">
-                        📈
-                    </div>
-                </div>
+        <div class="dashboard-card">
+            <div>
+                <div class="dashboard-title">Ingresos del mes</div>
+                <div class="dashboard-value kpi-success">RD$ @(resumen?.FacturadoMes.ToString("N2") ?? "0.00")</div>
             </div>
+            <div class="kpi-icon kpi-icon-success">%</div>
         </div>
 
-        <div class="col-md-4">
-            <div class="dashboard-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="dashboard-title">
-                            Servicios del Mes
-                        </div>
-
-                        <div class="dashboard-value text-warning">
-                            @Model.Resumen?.ServiciosMes
-                        </div>
-                    </div>
-
-                    <div class="fs-1">
-                        ✂️
-                    </div>
-                </div>
+        <div class="dashboard-card">
+            <div>
+                <div class="dashboard-title">Servicios del mes</div>
+                <div class="dashboard-value kpi-warning">@(resumen?.ServiciosMes ?? 0)</div>
             </div>
+            <div class="kpi-icon kpi-icon-warning">#</div>
         </div>
 
     </div>
 
-    <!-- Segunda fila -->
-    <div class="row g-4 mb-4">
+    <div class="dashboard-chart-grid">
 
-        <div class="col-lg-8">
-            <div class="chart-card p-4">
-                <h5 class="mb-4">
-                    Ingresos de la Semana
-                </h5>
-
-                <div class="chart-container">
-                    <canvas id="chartSemana"></canvas>
+        <div class="chart-card chart-card-wide">
+            <div class="chart-header">
+                <div>
+                    <h2>Ingresos de la semana</h2>
+                    <p>Facturacion diaria registrada.</p>
                 </div>
+            </div>
+
+            <div class="chart-container">
+                @if (!tieneIngresosSemana)
+                {
+                    <div class="chart-empty">Sin ingresos registrados esta semana.</div>
+                }
+                <canvas id="chartSemana"></canvas>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="chart-card p-4">
-                <h5 class="mb-4">
-                    Top Servicios
-                </h5>
-
-                <div class="chart-container">
-                    <canvas id="chartServicios"></canvas>
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <h2>Top servicios</h2>
+                    <p>Servicios mas vendidos.</p>
                 </div>
+            </div>
+
+            <div class="chart-container">
+                @if (!tieneTopServicios)
+                {
+                    <div class="chart-empty">Sin servicios facturados.</div>
+                }
+                <canvas id="chartServicios"></canvas>
             </div>
         </div>
 
     </div>
 
-    <!-- Tercera fila -->
-    <div class="row">
-
-        <div class="col-12">
-            <div class="chart-card p-4">
-                <h5 class="mb-4">
-                    Tendencia de Ingresos
-                </h5>
-
-                <div class="chart-container">
-                    <canvas id="chartMeses"></canvas>
-                </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <div>
+                <h2>Tendencia de ingresos</h2>
+                <p>Comparativo mensual para identificar crecimiento.</p>
             </div>
         </div>
 
+        <div class="chart-container chart-container-large">
+            @if (!tieneIngresosMeses)
+            {
+                <div class="chart-empty">Sin datos mensuales disponibles.</div>
+            }
+            <canvas id="chartMeses"></canvas>
+        </div>
     </div>
 
 </div>
@@ -133,47 +125,20 @@
 
     <script>
 
-        const semanaLabels = @Html.Raw(
-                    JsonSerializer.Serialize(
-                            Model.IngresosSemana.Select(x => x.Dia)
-                    )
-            );
+        const semanaLabels = @Html.Raw(JsonSerializer.Serialize(ingresosSemana.Select(x => x.Dia)));
+        const semanaData = @Html.Raw(JsonSerializer.Serialize(ingresosSemana.Select(x => x.Total)));
+        const mesesLabels = @Html.Raw(JsonSerializer.Serialize(ingresosMeses.Select(x => x.Mes)));
+        const mesesData = @Html.Raw(JsonSerializer.Serialize(ingresosMeses.Select(x => x.Total)));
+        const serviciosLabels = @Html.Raw(JsonSerializer.Serialize(topServicios.Select(x => x.Servicio)));
+        const serviciosData = @Html.Raw(JsonSerializer.Serialize(topServicios.Select(x => x.Cantidad)));
 
-    const semanaData = @Html.Raw(
-                JsonSerializer.Serialize(
-                        Model.IngresosSemana.Select(x => x.Total)
-                )
-        );
+        const moneyFormatter = new Intl.NumberFormat('es-DO', {
+            style: 'currency',
+            currency: 'DOP'
+        });
 
-    const mesesLabels = @Html.Raw(
-                JsonSerializer.Serialize(
-                        Model.IngresosMeses.Select(x => x.Mes)
-                )
-        );
-
-    const mesesData = @Html.Raw(
-                JsonSerializer.Serialize(
-                        Model.IngresosMeses.Select(x => x.Total)
-                )
-        );
-
-    const serviciosLabels = @Html.Raw(
-                JsonSerializer.Serialize(
-                        Model.TopServicios.Select(x => x.Servicio)
-                )
-        );
-
-    const serviciosData = @Html.Raw(
-                JsonSerializer.Serialize(
-                        Model.TopServicios.Select(x => x.Cantidad)
-                )
-        );
-
-
-
-    // =====================
-    // INGRESOS SEMANA
-    // =====================
+        const chartTextColor = '#475569';
+        const gridColor = 'rgba(148, 163, 184, .22)';
 
         new Chart(
             document.getElementById('chartSemana'),
@@ -185,7 +150,9 @@
                         label: 'Ingresos',
                         data: semanaData,
                         borderRadius: 12,
-                        borderSkipped: false
+                        borderSkipped: false,
+                        backgroundColor: '#2563eb',
+                        hoverBackgroundColor: '#1d4ed8'
                     }]
                 },
                 options: {
@@ -195,15 +162,30 @@
                         legend: {
                             display: false
                         }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: chartTextColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: chartTextColor,
+                                callback: value => moneyFormatter.format(value)
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        }
                     }
                 }
             }
         );
-
-
-        // =====================
-        // TOP SERVICIOS
-        // =====================
 
         new Chart(
             document.getElementById('chartServicios'),
@@ -212,7 +194,10 @@
                 data: {
                     labels: serviciosLabels,
                     datasets: [{
-                        data: serviciosData
+                        data: serviciosData,
+                        backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
                     }]
                 },
                 options: {
@@ -221,17 +206,17 @@
                     cutout: '70%',
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                color: chartTextColor,
+                                boxWidth: 12,
+                                padding: 18
+                            }
                         }
                     }
                 }
             }
         );
-
-
-        // =====================
-        // INGRESOS MENSUALES
-        // =====================
 
         new Chart(
             document.getElementById('chartMeses'),
@@ -243,12 +228,43 @@
                         label: 'Ingresos',
                         data: mesesData,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.35,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, .12)',
+                        pointBackgroundColor: '#16a34a',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 3,
+                        pointRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: chartTextColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: chartTextColor,
+                                callback: value => moneyFormatter.format(value)
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        }
+                    }
                 }
             }
         );
