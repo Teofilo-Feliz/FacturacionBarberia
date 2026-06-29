@@ -423,3 +423,206 @@ BEGIN
     ORDER BY SUM(df.Cantidad) DESC;
 END
 GO
+
+-- UPDATE: propina y retiros
+
+IF COL_LENGTH('dbo.Facturas', 'Propina') IS NULL
+BEGIN
+    ALTER TABLE Facturas
+    ADD Propina DECIMAL(10,2) NOT NULL
+        CONSTRAINT DF_Facturas_Propina DEFAULT(0);
+
+    ALTER TABLE Facturas
+    ADD CONSTRAINT CK_Facturas_Propina
+    CHECK (Propina >= 0);
+END
+GO
+
+IF OBJECT_ID('dbo.Retiros', 'U') IS NULL
+BEGIN
+    CREATE TABLE Retiros
+    (
+        RetiroId INT IDENTITY(1,1) PRIMARY KEY,
+        FechaRetiro DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UsuarioId INT NOT NULL,
+        Monto DECIMAL(10,2) NOT NULL,
+        Motivo NVARCHAR(150) NOT NULL,
+        Observacion NVARCHAR(500) NULL,
+        FechaCreacion DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UsuarioCreacion INT NULL,
+        FechaModificacion DATETIME2 NULL,
+        UsuarioModificacion INT NULL,
+        FechaEliminacion DATETIME2 NULL,
+        UsuarioEliminacion INT NULL,
+        EstaEliminado BIT NOT NULL DEFAULT(0),
+        CONSTRAINT CK_Retiros_Monto CHECK (Monto > 0),
+        CONSTRAINT FK_Retiros_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UsuarioId),
+        CONSTRAINT FK_Retiros_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuarios(UsuarioId),
+        CONSTRAINT FK_Retiros_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuarios(UsuarioId),
+        CONSTRAINT FK_Retiros_UsuarioEliminacion FOREIGN KEY (UsuarioEliminacion) REFERENCES Usuarios(UsuarioId)
+    );
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_Facturas_FechaFactura'
+      AND object_id = OBJECT_ID('Facturas')
+)
+BEGIN
+    CREATE INDEX IX_Facturas_FechaFactura
+    ON Facturas(FechaFactura);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_Retiros_FechaRetiro'
+      AND object_id = OBJECT_ID('Retiros')
+)
+BEGIN
+    CREATE INDEX IX_Retiros_FechaRetiro
+    ON Retiros(FechaRetiro);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_Retiros_UsuarioId'
+      AND object_id = OBJECT_ID('Retiros')
+)
+BEGIN
+    CREATE INDEX IX_Retiros_UsuarioId
+    ON Retiros(UsuarioId);
+END
+GO
+
+CREATE OR ALTER PROCEDURE Dashboard_ObtenerResumen
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        FacturadoHoy =
+            ISNULL(
+                (
+                    SELECT SUM(Total + ISNULL(Propina, 0))
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND CAST(FechaFactura AS DATE) = CAST(GETDATE() AS DATE)
+                ),0),
+
+        FacturadoSemana =
+            ISNULL(
+                (
+                    SELECT SUM(Total + ISNULL(Propina, 0))
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND DATEPART(YEAR, FechaFactura) = DATEPART(YEAR, GETDATE())
+                    AND DATEPART(WEEK, FechaFactura) = DATEPART(WEEK, GETDATE())
+                ),0),
+
+        FacturadoMes =
+            ISNULL(
+                (
+                    SELECT SUM(Total + ISNULL(Propina, 0))
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND YEAR(FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(FechaFactura) = MONTH(GETDATE())
+                ),0),
+
+        PropinasMes =
+            ISNULL(
+                (
+                    SELECT SUM(ISNULL(Propina, 0))
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND YEAR(FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(FechaFactura) = MONTH(GETDATE())
+                ),0),
+
+        RetirosMes =
+            ISNULL(
+                (
+                    SELECT SUM(Monto)
+                    FROM Retiros
+                    WHERE EstaEliminado = 0
+                    AND YEAR(FechaRetiro) = YEAR(GETDATE())
+                    AND MONTH(FechaRetiro) = MONTH(GETDATE())
+                ),0),
+
+        NetoMes =
+            ISNULL(
+                (
+                    SELECT SUM(Total + ISNULL(Propina, 0))
+                    FROM Facturas
+                    WHERE EstadoFactura = 'Activa'
+                    AND YEAR(FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(FechaFactura) = MONTH(GETDATE())
+                ),0)
+            -
+            ISNULL(
+                (
+                    SELECT SUM(Monto)
+                    FROM Retiros
+                    WHERE EstaEliminado = 0
+                    AND YEAR(FechaRetiro) = YEAR(GETDATE())
+                    AND MONTH(FechaRetiro) = MONTH(GETDATE())
+                ),0),
+
+        ServiciosMes =
+            ISNULL(
+                (
+                    SELECT SUM(fd.Cantidad)
+                    FROM DetalleFacturas fd
+                    INNER JOIN Facturas f
+                        ON fd.FacturaId = f.FacturaId
+                    WHERE f.EstadoFactura = 'Activa'
+                    AND YEAR(f.FechaFactura) = YEAR(GETDATE())
+                    AND MONTH(f.FechaFactura) = MONTH(GETDATE())
+                ),0);
+END
+GO
+
+CREATE OR ALTER PROCEDURE Dashboard_ObtenerIngresosSemana
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Dia = DATENAME(WEEKDAY, FechaFactura),
+        Total = SUM(Total + ISNULL(Propina, 0))
+    FROM Facturas
+    WHERE EstaEliminado = 0
+        AND EstadoFactura = 'Activa'
+        AND FechaFactura >= DATEADD(DAY, -7, GETDATE())
+    GROUP BY
+        DATENAME(WEEKDAY, FechaFactura),
+        DATEPART(WEEKDAY, FechaFactura)
+    ORDER BY DATEPART(WEEKDAY, FechaFactura);
+END
+GO
+
+CREATE OR ALTER PROCEDURE Dashboard_ObtenerIngresosMeses
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Mes = DATENAME(MONTH, FechaFactura),
+        Total = SUM(Total + ISNULL(Propina, 0))
+    FROM Facturas
+    WHERE EstaEliminado = 0
+        AND EstadoFactura = 'Activa'
+        AND YEAR(FechaFactura) = YEAR(GETDATE())
+    GROUP BY
+        DATENAME(MONTH, FechaFactura),
+        MONTH(FechaFactura)
+    ORDER BY MONTH(FechaFactura);
+END
+GO
+
