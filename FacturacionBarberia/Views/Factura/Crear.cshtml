@@ -286,17 +286,17 @@
 
         // 2. Validaciones previas
         if (!clienteSelect.value) {
-            Swal.fire('Error', 'Debe seleccionar un cliente', 'error');
+            Swal.fire('Atencion', 'Debe seleccionar un cliente', 'warning');
             return;
         }
 
         if (!formaPagoSelect.value) {
-            Swal.fire('Error', 'Debe seleccionar una forma de pago', 'error');
+            Swal.fire('Atencion', 'Debe seleccionar una forma de pago', 'warning');
             return;
         }
 
         if (detalles.length === 0) {
-            Swal.fire('Error', 'Debe agregar al menos un servicio al detalle', 'error');
+            Swal.fire('Atencion', 'Debe agregar al menos un servicio al detalle', 'warning');
             return;
         }
 
